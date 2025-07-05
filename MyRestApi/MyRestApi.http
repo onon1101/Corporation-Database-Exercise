@@ -1,0 +1,6 @@
+@MyRestApi_HostAddress = http://localhost:5196
+
+GET {{MyRestApi_HostAddress}}/
+Accept: application/json
+
+###
