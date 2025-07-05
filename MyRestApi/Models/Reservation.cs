@@ -1,16 +1,11 @@
-namespace MyRestApi.Models;
-
-public enum ReservationStatus
+namespace MyRestApi.Models
 {
-    Pending = 0,
-    Paid,
-    Cancelled
-}
-public class Reservation
-{
-    public int Id { set; get; }
-    public int UserId { get; }
-    public int ScheduleId { get; }
-    public ReservationStatus Status { set; get; }
-    public int ReservedAt { set; get; }
+    public class Reservation
+    {
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public Guid ScheduleId { get; set; }
+        public string Status { get; set; } = "Pending";
+        public DateTime ReservedAt { get; set; } = DateTime.UtcNow;
+    }
 }

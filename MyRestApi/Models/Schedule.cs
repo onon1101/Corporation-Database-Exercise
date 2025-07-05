@@ -1,10 +1,11 @@
-namespace MyRestApi.Models;
-
-public class Schedule
+namespace MyRestApi.Models
 {
-    public int Id { set; get; }
-    public int MovieId { set; get; }
-    public int TheaterId { set; get; }
-    public int StartTime{ set; get; }
-    public int EndTime{ set; get; }
+    public class Schedule
+    {
+        public Guid Id { get; set; }
+        public Guid MovieId { get; set; }
+        public Guid TheaterId { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+    }
 }

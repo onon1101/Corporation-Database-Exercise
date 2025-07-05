@@ -1,11 +1,12 @@
 using MyRestApi.Models;
 
-namespace MyRestApi.Repositories;
-
-public interface IScheduleRepository
+namespace MyRestApi.Repositories
 {
-    Task<Schedule?> GetScheduleById(int id);
-    Task AddSchedule(Schedule schedule);
-    Task ModifySchedule(Schedule schedule);
-    Task DeleteSchedule(Schedule schedule);
+    public interface IScheduleRepository
+    {
+        Task<Guid> CreateSchedule(Schedule schedule);
+        Task<IEnumerable<Schedule>> GetAllSchedules();
+        Task<IEnumerable<Schedule>> GetSchedulesByMovie(Guid movieId);
+        Task<bool> DeleteSchedule(Guid id);
+    }
 }

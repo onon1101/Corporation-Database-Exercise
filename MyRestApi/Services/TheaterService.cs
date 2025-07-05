@@ -1,29 +1,54 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using MyRestApi.Models;
 using MyRestApi.Repositories;
-using MyRestApi.Services;
 
-
-public class TheaterService : ITheaterService
+namespace MyRestApi.Services
 {
-    private readonly IUserRepository _userRepo;
-    private readonly ITheaterRepository _repo;
-
-    public TheaterService(IUserRepository userRepo, ITheaterRepository repo)
+    public class TheaterService : ITheaterService
     {
-        _repo = repo;
-        _userRepo = userRepo;
-    }
+        private readonly ITheaterRepository _repo;
+        private readonly ISeatRepository _seatRepo;
 
-    public async Task Add(Theater theater, int movieId, Guid id)
-    {
-        bool exist = await _userRepo.IsUserExist(id);
-        if (!exist)
+        public TheaterService(ITheaterRepository repo, ISeatRepository seatRepo)
         {
-            throw new Exception("user not found");
+            _repo = repo;
+            _seatRepo = seatRepo;
         }
 
-        
-    }
+        public async Task<Result<Guid>> CreateTheaterAsync(Theater theater)
+        {
+            Result<Guid> createTheater = await _repo.CreateTheater(theater);
 
+            if (string.Empty != createTheater.Error)
+            {
+                return createTheater;
+            }
+
+            Guid theaterId = (Guid)createTheater.Ok;
+
+            for (int i = 1; i < theater.TotalSeats + 1; i++)
+            {
+                var seat = new Seat
+                {
+                    TheaterId = theaterId,
+                    SeatNumber = i.ToString()
+                };
+                await _seatRepo.CreateSeat(seat);
+            }
+
+            
+            return Result<Guid>.Success(theaterId);
+        } 
+
+        public Task<bool> DeleteTheaterAsync(Guid id)
+            => _repo.DeleteTheater(id);
+
+        public Task<IEnumerable<Theater>> GetAllTheatersAsync()
+            => _repo.GetAllTheaters();
+
+        public Task<Theater?> GetTheaterByIdAsync(Guid id)
+            => _repo.GetTheaterById(id);
+
+        public Task<bool> UpdateTheaterAsync(Guid id, Theater data)
+            => _repo.UpdateTheater(id, data);
+    }
 }

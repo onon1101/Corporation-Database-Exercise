@@ -1,55 +1,66 @@
-using System.Data;
 using Dapper;
 using MyRestApi.Models;
+using System.Data;
 
-namespace MyRestApi.Repositories;
-
-public class MovieRepository: IMovieRepository
+namespace MyRestApi.Repositories
 {
-    private readonly IDbConnection _db;
-
-    public MovieRepository(IDbConnection db)
+    public class MovieRepository : IMovieRepository
     {
-        _db = db;
-    }
+        private readonly IDbConnection _db;
 
-    public async Task AddMovie(Movie movie)
-    {
-        const string sql = @"INSERT INTO movies (title, description, duration, rating, poster_url)
-        VALUES (@Title, @Description, @Duration, @Rating, @PosterUrl)";
+        public MovieRepository(IDbConnection db)
+        {
+            _db = db;
+        }
 
-        await _db.ExecuteAsync(sql, movie);
-    }
+        public async Task<Guid> CreateMovie(Movie movie)
+        {
+            const string sql = @"
+                INSERT INTO movies (title, description, duration, rating, poster_url)
+                VALUES (@Title, @Description, @Duration, @Rating, @PosterUrl)
+                RETURNING id;
+            ";
+            return (Guid)(await _db.ExecuteScalarAsync(sql, movie))!;
+        }
 
-    public async Task PatchMovie(Movie movie)
-    {
-        const string sql = @"
-            UPDATE movies
-            SET title = @Title,
-                description = @Description,
-                duration = @Duration,
-                rating = @Rating,
-                poster_url = @PosterUrl
-            WHERE id = @Id";
+        public async Task<IEnumerable<Movie>> GetAllMovies()
+        {
+            const string sql = "SELECT * FROM movies;";
+            return await _db.QueryAsync<Movie>(sql);
+        }
 
-        await _db.ExecuteAsync(sql, movie);
-    }
+        public async Task<Movie?> GetMovieById(Guid id)
+        {
+            const string sql = "SELECT * FROM movies WHERE id = @Id;";
+            return await _db.QueryFirstOrDefaultAsync<Movie>(sql, new { Id = id });
+        }
 
-    public async Task<List<Movie>?> GetAllMovies()
-    {
-        const string sql = @"SELECT * FROM movies";
-        return (await _db.QueryAsync<Movie>(sql)).ToList();
-    }
+        public async Task<bool> UpdateMovie(Guid id, Movie movie)
+        {
+            const string sql = @"
+                UPDATE movies
+                SET title = COALESCE(@Title, title),
+                    description = COALESCE(@Description, description),
+                    duration = COALESCE(@Duration, duration),
+                    rating = COALESCE(@Rating, rating),
+                    poster_url = COALESCE(@PosterUrl, poster_url)
+                WHERE id = @Id;
+            ";
+            return await _db.ExecuteAsync(sql, new
+            {
+                Id = id,
+                movie.Title,
+                movie.Description,
+                movie.Duration,
+                movie.Rating,
+                movie.PosterUrl
+            }) > 0;
+        }
 
-    public async Task<Movie?> GetMovieById(int idx)
-    {
-        const string sql = @"SELECT * FROM movies WHERE id = @Id";
-        return await _db.QuerySingleOrDefaultAsync<Movie>(sql, new { Id = idx });
-    }
-
-    public async Task DeleteMovieById(int idx)
-    {
-        const string sql = @"DELETE FROM movies WHERE id = @Id";
-        await _db.ExecuteAsync(sql, new { Id = idx });
+        public async Task<bool> DeleteMovie(Guid id)
+        {
+            const string sql = "DELETE FROM movies WHERE id = @Id;";
+            return await _db.ExecuteAsync(sql, new { Id = id }) > 0;
+        }
     }
 }

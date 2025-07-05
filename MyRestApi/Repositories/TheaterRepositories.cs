@@ -1,57 +1,71 @@
-using System.Collections.Immutable;
-using System.Data;
 using Dapper;
 using MyRestApi.Models;
+using System.Data;
 
-namespace MyRestApi.Repositories;
-
-public class TheaterRepositiry: ITheaterRepository
+namespace MyRestApi.Repositories
 {
-    private readonly IDbConnection _db;
+    public class TheaterRepository : ITheaterRepository
+    {
+        private readonly IDbConnection _db;
 
-    public TheaterRepositiry(IDbConnection db)
-    {
-        _db = db;
-    }
-    public async Task<Theater?> GetTheaterById(int idx)
-    {
-        const string sql = @"SELECT * FROM theaters WHERE id = @Id";
-        return await _db.QuerySingleOrDefaultAsync<Theater>(sql, new { Id = idx});
-    }
-    public async Task<Theater?> GetTheaterByName(string name)
-    {
-        const string sql = @"SELECT * FROM theaters WHERE name = @Name";
-        return await _db.QuerySingleOrDefaultAsync<Theater>(sql, new { Name = name });
-    }
+        public TheaterRepository(IDbConnection db)
+        {
+            _db = db;
+        }
 
-    public async Task<Theater?> GetTheaterByLocation(string location)
-    {
-        const string sql = @"SELECT * FROM theaters WHERE location = @Location";
-        return await _db.QuerySingleOrDefaultAsync<Theater>(sql, new { Location = location});
-    }
+        public async Task<Result<Guid>> CreateTheater(Theater theater)
+        {
+            const string checkSql = @"SELECT id FROM theaters WHERE location = @Location";
+            var existingId = await _db.ExecuteScalarAsync<Guid?>(checkSql, new { theater.Location });
 
-    public async Task<List<Theater>> GetAllTheater()
-    {
-        const string sql = @"SELECT * FROM theaters";
-        return (await _db.QueryAsync<Theater>(sql)).ToList();
-    }
-    public async Task AddTheater(Theater theater)
-    {
-        const string sql = @"INSERT INTO theaters (name, location, total_seats)
-        VALUES (@Name, @Location, @TotalSeats)";
+            if (existingId.HasValue)
+            {
+                return Result<Guid>.Fail("[Theater] the theater is existed.");
+            }
 
-        await _db.ExecuteAsync(sql, theater);
-    }
-    public async Task PatchTheater(Theater theater)
-    {
-        const string sql = @"UPDATE theaters
-        SET total_seats = @TotalSeats
-        WHERE id = @Id";
-        await _db.ExecuteAsync(sql, theater);
-    }
-    public async Task DeleteTheaterById(int idx)
-    {
-        const string sql = @"DELETE FROM theaters WHERE id = @Id";
-        await _db.ExecuteAsync(sql, new { Id = idx } );
+            const string sql = @"
+                INSERT INTO theaters (name, location, total_seats)
+                VALUES (@Name, @Location, @TotalSeats)
+                RETURNING id;
+            ";
+
+            return Result<Guid>.Success((Guid)(await _db.ExecuteScalarAsync(sql, theater))!);
+        }
+
+        public async Task<bool> DeleteTheater(Guid id)
+        {
+            const string sql = "DELETE FROM theaters WHERE id = @Id";
+            return await _db.ExecuteAsync(sql, new { Id = id }) > 0;
+        }
+
+        public async Task<IEnumerable<Theater>> GetAllTheaters()
+        {
+            const string sql = "SELECT * FROM theaters";
+            return await _db.QueryAsync<Theater>(sql);
+        }
+
+        public async Task<Theater?> GetTheaterById(Guid id)
+        {
+            const string sql = "SELECT * FROM theaters WHERE id = @Id";
+            return await _db.QueryFirstOrDefaultAsync<Theater>(sql, new { Id = id });
+        }
+
+        public async Task<bool> UpdateTheater(Guid id, Theater data)
+        {
+            const string sql = @"
+                UPDATE theaters
+                SET name = COALESCE(@Name, name),
+                    location = COALESCE(@Location, location),
+                    total_seats = COALESCE(@TotalSeats, total_seats)
+                WHERE id = @Id;
+            ";
+            return await _db.ExecuteAsync(sql, new
+            {
+                Id = id,
+                data.Name,
+                data.Location,
+                data.TotalSeats
+            }) > 0;
+        }
     }
 }

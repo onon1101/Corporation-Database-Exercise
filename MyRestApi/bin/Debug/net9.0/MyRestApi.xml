@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MyRestApi</name>
+    </assembly>
+    <members>
+        <member name="M:MyRestApi.Controllers.MovieController.Create(MyRestApi.DTO.CreateMovieDTO)">
+            <summary>
+            建立一部新電影
+            </summary>
+            <remarks>
+            管理員可以使用此 API 新增電影資料，例如名稱、簡介、片長等。
+            </remarks>
+            <param name="dto">電影建立資料</param>
+            <returns>新電影的 ID</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.MovieController.All">
+            <summary>
+            取得所有電影列表
+            </summary>
+            <remarks>
+            回傳資料庫中所有電影的完整清單。
+            </remarks>
+            <returns>電影清單</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.MovieController.Get(System.Guid)">
+            <summary>
+            查詢單一電影
+            </summary>
+            <remarks>
+            根據電影 ID 查詢該筆詳細資料。
+            </remarks>
+            <param name="id">電影 ID</param>
+            <returns>電影資料</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.MovieController.Update(System.Guid,MyRestApi.DTO.UpdateMovieDTO)">
+            <summary>
+            更新電影資料
+            </summary>
+            <remarks>
+            根據 ID 修改電影的標題、簡介、時長等欄位。
+            </remarks>
+            <param name="id">電影 ID</param>
+            <param name="dto">更新資料</param>
+            <returns>更新結果</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.MovieController.Delete(System.Guid)">
+            <summary>
+            刪除電影
+            </summary>
+            <remarks>
+            根據 ID 移除電影紀錄。
+            </remarks>
+            <param name="id">電影 ID</param>
+            <returns>刪除結果</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.ReservationController.Create(MyRestApi.DTO.CreateReservationDTO)">
+            <summary>
+            建立一筆新的訂位紀錄
+            </summary>
+            <remarks>
+            使用者可透過本 API 預約特定場次與座位。傳入使用者 ID、場次 ID 與座位清單。
+            </remarks>
+            <param name="dto">包含使用者、場次與座位的資料</param>
+            <returns>成功建立的訂位 ID</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.ReservationController.ByUser(System.Guid)">
+            <summary>
+            查詢使用者的所有訂位
+            </summary>
+            <remarks>
+            根據使用者 ID，查詢他預約過的所有場次資料。
+            </remarks>
+            <param name="userId">使用者的唯一識別碼</param>
+            <returns>該使用者的所有訂位清單</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.ReservationController.Delete(System.Guid)">
+            <summary>
+            刪除一筆訂位紀錄
+            </summary>
+            <remarks>
+            根據訂位 ID 刪除該筆訂位資料，同時清除其座位關聯紀錄。
+            </remarks>
+            <param name="id">訂位 ID</param>
+            <returns>刪除成功與否</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.ScheduleController.Create(MyRestApi.DTO.CreateScheduleDTO)">
+            <summary>
+            建立一筆電影場次
+            </summary>
+            <remarks>
+            管理員可以使用此 API 建立場次，包含電影、電影院與時間資訊。
+            </remarks>
+            <param name="dto">場次建立資料</param>
+            <returns>新建立的場次 ID</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.ScheduleController.All">
+            <summary>
+            取得所有電影場次
+            </summary>
+            <remarks>
+            回傳系統中所有已建立的電影場次資料。
+            </remarks>
+            <returns>場次清單</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.ScheduleController.ByMovie(System.Guid)">
+            <summary>
+            查詢某部電影的所有場次
+            </summary>
+            <remarks>
+            根據電影 ID，取得所有該部電影的場次。
+            </remarks>
+            <param name="movieId">電影 ID</param>
+            <returns>該電影的場次列表</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.ScheduleController.Delete(System.Guid)">
+            <summary>
+            刪除一筆電影場次
+            </summary>
+            <remarks>
+            根據場次 ID 刪除該筆資料。
+            </remarks>
+            <param name="id">場次 ID</param>
+            <returns>刪除結果</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.TheaterController.Create(MyRestApi.DTO.CreateTheaterDTO)">
+            <summary>
+            創建電影院
+            </summary>
+            <remarks>
+            創建新電影院資訊。輸入電影院名稱、位置與總容納座位大小。
+            </remarks>
+            <param name="dto">創建電影院資訊</param>
+            <returns>回傳戲院 ID</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.TheaterController.Delete(System.Guid)">
+            <summary>
+            刪除戲院
+            </summary>
+            <remarks>
+            刪除電影院
+            </remarks>
+            <param name="id">電影院 ID</param>
+            <returns>回傳訊息是否刪除成功</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.TheaterController.All">
+            <summary>
+            取得所有電影院的資訊
+            </summary>
+            <remarks>
+            所有電影院的資訊
+            </remarks>
+            <returns>回傳電影院的陣列</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.TheaterController.Get(System.Guid)">
+            <summary>
+            使用 ID 取得該電影院的資訊
+            </summary>
+            <remarks>
+            根據電影院 ID 取得該電影院的資料
+            </remarks>
+            <param name="id">電影院 ID</param>
+            <returns>電影院資訊</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.TheaterController.Update(System.Guid,MyRestApi.DTO.UpdateTheaterDTO)">
+            <summary>
+            更新電影院的資訊
+            </summary>
+            <remarks>
+            根據傳入的電影院資訊，修改資料庫中的既有的電影院資訊
+            </remarks>
+            <param name="id">電影院 ID</param>
+            <param name="dto">修改電影院之相關資訓</param>
+            <returns>是否修改成功</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.UserController.Register(MyRestApi.DTO.UserRegisterDTO)">
+            <summary>
+            使用者註冊
+            </summary>
+            <remarks>
+            建立新使用者帳號。輸入使用者名稱、Email 與密碼。
+            </remarks>
+            <param name="dto">註冊資訊</param>
+            <returns>回傳使用者基本資料與 ID</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.UserController.Login(MyRestApi.DTO.UserLoginDTO)">
+            <summary>
+            使用者登入
+            </summary>
+            <remarks>
+            驗證 Email 與密碼是否正確，登入成功後回傳使用者資訊。
+            </remarks>
+            <param name="dto">登入資訊</param>
+            <returns>使用者資訊或 Unauthorized</returns>
+        </member>
+        <member name="M:MyRestApi.Controllers.UserController.Profile(System.Guid)">
+            <summary>
+            取得使用者個人資訊
+            </summary>
+            <remarks>
+            根據使用者 ID 取得使用者資料（僅回傳非敏感欄位）。
+            </remarks>
+            <param name="id">使用者 ID</param>
+            <returns>使用者資訊</returns>
+        </member>
+    </members>
+</doc>

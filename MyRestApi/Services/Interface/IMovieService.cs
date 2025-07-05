@@ -1,13 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
 using MyRestApi.Models;
 
-namespace MyRestApi.Services;
-
-public interface IMovieService
+namespace MyRestApi.Services
 {
-    Task<List<Movie>> GetAllMovies(Guid id);
-    Task<Movie> GetMovie(int movieId, Guid id);
-    void Modify(int movieId, Guid id);
-    void AddMovie(Movie movie, Guid id);
-    void DeleteMovie(int movieId, Guid id);
+    public interface IMovieService
+    {
+        Task<Guid> CreateMovieAsync(Movie movie);
+        Task<IEnumerable<Movie>> GetAllMoviesAsync();
+        Task<Movie?> GetMovieByIdAsync(Guid id);
+        Task<bool> UpdateMovieAsync(Guid id, Movie movie);
+        Task<bool> DeleteMovieAsync(Guid id);
+    }
 }

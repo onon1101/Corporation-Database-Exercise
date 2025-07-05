@@ -25,18 +25,24 @@ public class UserRepository : IUserRepository
         var result = await _db.QuerySingleOrDefaultAsync<int?>(sql, new { user.Id });
         return result.HasValue;
     }
-    public async Task<Guid?> AddUserAsync(User user)
+    public async Task<Guid> CreateUser(User user)
     {
         const string sqlQuire = @"INSERT INTO users (Username, Email, Password)
         VALUES (@Username, @Email, @Password)
         RETURNING id;
         ";
 
-        var id = await _db.ExecuteScalarAsync<Guid?>(sqlQuire, user);
-        return id;
+        var result = await _db.ExecuteScalarAsync(sqlQuire, user);
+
+        Guid? id = result as Guid?;
+        if (id == null)
+        {
+            throw new Exception("Insert user failed: ID is null.");
+        }
+        return id.Value;
     }
 
-    public async Task<User?> GetUserById(int id)
+    public async Task<User?> GetUserById(Guid id)
     {
         const string sql = @"SELECT * FROM users WHERE id = @Id;";
         return await _db.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });

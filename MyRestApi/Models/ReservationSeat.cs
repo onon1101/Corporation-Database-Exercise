@@ -1,8 +1,9 @@
-namespace MyRestApi.Models;
-
-public class ReservationSeat
+namespace MyRestApi.Models
 {
-    public int id { set; get; }
-    public int ReservationId { get; }
-    public int SeatId { set; get; }
+    public class ReservationSeat
+    {
+        public Guid Id { get; set; }
+        public Guid ReservationId { get; set; }
+        public Guid SeatId { get; set; }
+    }
 }

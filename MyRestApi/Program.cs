@@ -1,9 +1,11 @@
+using System.Reflection;
 using MyRestApi.Repositories;
 using MyRestApi.Services;
 using System.Data;
 using Npgsql;
 using MyRestApi.Utils;
 using Microsoft.EntityFrameworkCore;
+using MyRestApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +16,14 @@ if (builder.Environment.IsEnvironment("Test"))
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
 
-builder.Services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+// extension from MyRestApi Module.
+builder.Services.AddAppServices(builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 DbMigration.EnsureDatabase(connectionString);

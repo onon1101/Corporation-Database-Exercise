@@ -1,18 +1,13 @@
 using MyRestApi.Models;
 
-namespace MyRestApi.Repositories;
-
-public interface ITheaterRepository
+namespace MyRestApi.Repositories
 {
-    // get
-    Task<Theater?> GetTheaterById(int idx);
-    Task<Theater?> GetTheaterByName(string name);
-    Task<Theater?> GetTheaterByLocation(string location); // hard
-    Task<List<Theater>> GetAllTheater();
-    // post
-    Task AddTheater(Theater theater);
-    //patch
-    Task PatchTheater(Theater theater);
-    //delete
-    Task DeleteTheaterById(int idx);
+    public interface ITheaterRepository
+    {
+        Task<Result<Guid>> CreateTheater(Theater theater);
+        Task<bool> DeleteTheater(Guid id);
+        Task<IEnumerable<Theater>> GetAllTheaters();
+        Task<Theater?> GetTheaterById(Guid id);
+        Task<bool> UpdateTheater(Guid id, Theater updateData);
+    }
 }

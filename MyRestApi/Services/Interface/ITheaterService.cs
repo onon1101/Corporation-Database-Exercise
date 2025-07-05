@@ -1,10 +1,13 @@
 using MyRestApi.Models;
 
-public interface ITheaterService
+namespace MyRestApi.Services
 {
-    Task Add(Theater theater, int movieId, Guid id);
-    Task<Theater> GetAllTheater();
-    Task<Theater> GetTheater();
-    Task Modfiy();
-    Task Delete();
+    public interface ITheaterService
+    {
+        Task<Result<Guid>> CreateTheaterAsync(Theater theater);
+        Task<bool> DeleteTheaterAsync(Guid id);
+        Task<IEnumerable<Theater>> GetAllTheatersAsync();
+        Task<Theater?> GetTheaterByIdAsync(Guid id);
+        Task<bool> UpdateTheaterAsync(Guid id, Theater updateData);
+    }
 }

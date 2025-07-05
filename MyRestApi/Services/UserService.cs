@@ -11,63 +11,23 @@ public class UserService : IUserService
     {
         _repo = repo;
     }
-    public async Task<bool> IsUserExist(Guid id)
-    {
-        bool exist = await _repo.IsUserExist(id);
-        return exist;
-        
-    }
-    public async Task<bool> IsUserExist(User user)
-    {
-        bool exist = await _repo.IsUserExist(user);
-        return exist;
-    }
     public async Task<Guid> RegisterUserAsync(User user)
     {
-        var existing = await _repo.GetUserByEmail(user.Email);
-
-        if (existing != null)
-        {
-            throw new Exception("Email already exist");
-        }
-
-        var userId = await _repo.AddUserAsync(user);
-        if (userId == null)
-        {
-            throw new Exception("Failed to create user.");
-        }
-
-        return userId.Value;
+        return await _repo.CreateUser(user);
     }
-    public async Task<User> GetUserById(int id)
+
+    public async Task<User?> AuthenticateUserAsync(string email, string password)
     {
-        User? user = await _repo.GetUserById(id);
-        if (null == user)
+        var user = await _repo.GetUserByEmail(email);
+        if (user == null || user.Password != password)
         {
             return null;
         }
-
-        return user;
-    }
-    public async Task<User> GetUserByEmail(string email)
-    {
-        User? user = await _repo.GetUserByEmail(email);
-        if (user == null)
-        {
-            throw new Exception("User does not exist.");
-        }
-
         return user;
     }
 
-    public async Task DeleteUser(Guid id)
+    public async Task<User?> GetUserById(Guid id)
     {
-        await _repo.DeleteUser(id);
+        return await _repo.GetUserById(id);
     }
-
-    public async Task PatchUser(User user)
-    {
-        await _repo.PatchUser(user);
-    }
-    
 }

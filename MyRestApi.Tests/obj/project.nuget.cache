@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XsFTnj/ySZA=",
+  "dgSpecHash": "Zo/8KbWx/as=",
   "success": true,
-  "projectFilePath": "/workspaces/csharp/MyRestApi.Tests/MyRestApi.Tests.csproj",
+  "projectFilePath": "/workspaces/dev/csharp/MyRestApi.Tests/MyRestApi.Tests.csproj",
   "expectedPackageFiles": [
     "/home/vscode/.nuget/packages/azure.core/1.35.0/azure.core.1.35.0.nupkg.sha512",
     "/home/vscode/.nuget/packages/azure.identity/1.10.3/azure.identity.1.10.3.nupkg.sha512",
