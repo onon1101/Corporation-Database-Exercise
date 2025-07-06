@@ -28,7 +28,8 @@ namespace MyRestApi.Extensions
             services.AddScoped<IScheduleRepository, ScheduleRepository>();
             services.AddScoped<IScheduleService, ScheduleService>();
 
-            services.AddScoped<ISeatRepository, SeatRepository>(); 
+            services.AddScoped<ISeatRepository, SeatRepository>();
+            services.AddScoped<ISeatService, SeatService>();
 
             // Reservation and Reservation_seat
             services.AddScoped<IReservationRepository, ReservationRepository>();

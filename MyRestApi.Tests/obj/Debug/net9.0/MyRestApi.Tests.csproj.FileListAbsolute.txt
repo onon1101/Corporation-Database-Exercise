@@ -467,3 +467,5 @@
 /workspaces/csharp/MyRestApi.Tests/obj/Debug/net9.0/MyRestApi.Tests.genruntimeconfig.cache
 /workspaces/csharp/MyRestApi.Tests/obj/Debug/net9.0/ref/MyRestApi.Tests.dll
 /workspaces/csharp/MyRestApi.Tests/bin/Debug/net9.0/appsettings.Test.json
+/workspaces/csharp/MyRestApi.Tests/bin/Debug/net9.0/MyRestApi.xml
+/workspaces/csharp/MyRestApi.Tests/obj/Debug/net9.0/MyRestApi.Tests.sourcelink.json

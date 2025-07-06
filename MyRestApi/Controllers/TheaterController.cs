@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MyRestApi.DTO;
 using MyRestApi.Models;
+using MyRestApi.Repositories;
 using MyRestApi.Services;
 
 namespace MyRestApi.Controllers;
@@ -10,10 +11,12 @@ namespace MyRestApi.Controllers;
 public class TheaterController : ControllerBase
 {
     private readonly ITheaterService _service;
+    private readonly ISeatService _seatService;
 
-    public TheaterController(ITheaterService service)
+    public TheaterController(ITheaterService service, ISeatService seatService)
     {
         _service = service;
+        _seatService = seatService;
     }
 
     /// <summary>
@@ -33,8 +36,12 @@ public class TheaterController : ControllerBase
             Location = dto.Location,
             TotalSeats = dto.TotalSeats
         };
-        var id = await _service.CreateTheaterAsync(theater);
-        return Ok(new { id });
+        var result = await _service.CreateTheaterAsync(theater);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result);
+        }
+        return Ok(new { id = result.Ok });
     }
 
     /// <summary>
@@ -110,4 +117,12 @@ public class TheaterController : ControllerBase
 
         return Ok(new { message = "Theater updated" });
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetSeatAll(Guid id)
+    {
+        var seats = await _seatService.GetSeatsByTheaterAsync(id);
+
+        return Ok(seats);
+    } 
 }

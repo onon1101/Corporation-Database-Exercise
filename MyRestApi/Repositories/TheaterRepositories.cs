@@ -15,8 +15,8 @@ namespace MyRestApi.Repositories
 
         public async Task<Result<Guid>> CreateTheater(Theater theater)
         {
-            const string checkSql = @"SELECT id FROM theaters WHERE location = @Location";
-            var existingId = await _db.ExecuteScalarAsync<Guid?>(checkSql, new { theater.Location });
+            const string checkSql = @"SELECT id, name FROM theaters WHERE name = @Name OR location = @Location";
+            var existingId = await _db.ExecuteScalarAsync<Guid?>(checkSql, new { name = theater.Name, location = theater.Location });
 
             if (existingId.HasValue)
             {
@@ -40,13 +40,13 @@ namespace MyRestApi.Repositories
 
         public async Task<IEnumerable<Theater>> GetAllTheaters()
         {
-            const string sql = "SELECT * FROM theaters";
+            const string sql = "SELECT id, name, location, total_seats AS TotalSeats FROM theaters";
             return await _db.QueryAsync<Theater>(sql);
         }
 
         public async Task<Theater?> GetTheaterById(Guid id)
         {
-            const string sql = "SELECT * FROM theaters WHERE id = @Id";
+            const string sql = "SELECT id, name, location, total_seats AS TotalSeats FROM theaters WHERE id = @Id";
             return await _db.QueryFirstOrDefaultAsync<Theater>(sql, new { Id = id });
         }
 

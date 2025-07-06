@@ -25,13 +25,27 @@ namespace MyRestApi.Repositories
 
         public async Task<IEnumerable<Schedule>> GetAllSchedules()
         {
-            const string sql = "SELECT * FROM schedules;";
+            const string sql = @"SELECT 
+    id,
+    movie_id AS MovieId,
+    theater_id AS TheaterId,
+    start_time AS StartTime,
+    end_time AS EndTime
+FROM schedules";
             return await _db.QueryAsync<Schedule>(sql);
         }
 
         public async Task<IEnumerable<Schedule>> GetSchedulesByMovie(Guid movieId)
         {
-            const string sql = "SELECT * FROM schedules WHERE movie_id = @MovieId;";
+            const string sql = @"
+SELECT 
+    id,
+    movie_id AS MovieId,
+    theater_id AS TheaterId,
+    start_time AS StartTime,
+    end_time AS EndTime
+FROM schedules
+WHERE movie_id = @MovieId;";
             return await _db.QueryAsync<Schedule>(sql, new { MovieId = movieId });
         }
 

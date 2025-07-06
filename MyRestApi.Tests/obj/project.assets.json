@@ -10987,11 +10987,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/workspaces/dev/csharp/MyRestApi.Tests/MyRestApi.Tests.csproj",
+      "projectUniqueName": "/workspaces/csharp/MyRestApi.Tests/MyRestApi.Tests.csproj",
       "projectName": "MyRestApi.Tests",
-      "projectPath": "/workspaces/dev/csharp/MyRestApi.Tests/MyRestApi.Tests.csproj",
+      "projectPath": "/workspaces/csharp/MyRestApi.Tests/MyRestApi.Tests.csproj",
       "packagesPath": "/home/vscode/.nuget/packages/",
-      "outputPath": "/workspaces/dev/csharp/MyRestApi.Tests/obj/",
+      "outputPath": "/workspaces/csharp/MyRestApi.Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/vscode/.nuget/NuGet/NuGet.Config"
@@ -11006,8 +11006,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/workspaces/dev/csharp/MyRestApi/MyRestApi.csproj": {
-              "projectPath": "/workspaces/dev/csharp/MyRestApi/MyRestApi.csproj"
+            "/workspaces/csharp/MyRestApi/MyRestApi.csproj": {
+              "projectPath": "/workspaces/csharp/MyRestApi/MyRestApi.csproj"
             }
           }
         }

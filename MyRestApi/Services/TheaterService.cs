@@ -18,7 +18,7 @@ namespace MyRestApi.Services
         {
             Result<Guid> createTheater = await _repo.CreateTheater(theater);
 
-            if (string.Empty != createTheater.Error)
+            if (!createTheater.IsSuccess)
             {
                 return createTheater;
             }
