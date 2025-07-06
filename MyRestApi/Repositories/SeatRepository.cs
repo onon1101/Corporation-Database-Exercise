@@ -24,7 +24,11 @@ namespace MyRestApi.Repositories
 
         public async Task<IEnumerable<Seat>> GetSeatsByTheater(Guid theaterId)
         {
-            const string sql = "SELECT * FROM seats WHERE theater_id = @TheaterId;";
+            const string sql = @"SELECT 
+                id AS Id,
+                theater_id AS TheaterId, 
+                seat_number AS SeatNumber
+             FROM seats WHERE theater_id = @TheaterId;";
             return await _db.QueryAsync<Seat>(sql, new { TheaterId = theaterId });
         }
 

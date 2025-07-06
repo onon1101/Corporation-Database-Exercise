@@ -23,7 +23,7 @@ namespace MyRestApi.Services
                 return createTheater;
             }
 
-            Guid theaterId = (Guid)createTheater.Ok;
+            Guid theaterId = createTheater.Ok;
 
             for (int i = 1; i < theater.TotalSeats + 1; i++)
             {
@@ -34,7 +34,6 @@ namespace MyRestApi.Services
                 };
                 await _seatRepo.CreateSeat(seat);
             }
-
             
             return Result<Guid>.Success(theaterId);
         } 

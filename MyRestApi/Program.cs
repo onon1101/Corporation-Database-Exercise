@@ -6,6 +6,10 @@ using Npgsql;
 using MyRestApi.Utils;
 using Microsoft.EntityFrameworkCore;
 using MyRestApi.Extensions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using MyRestApi.Models;
+
+// NpgsqlConnection.GlobalTypeMapper.MapEnum<ReservationStatus>();
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -15,22 +15,24 @@ namespace MyRestApi.Repositories
 
         public async Task<Guid> CreateReservation(Reservation reservation, List<Guid> seatIds)
         {
+            if (_db.State != ConnectionState.Open)
+                _db.Open();
+
             using var tx = _db.BeginTransaction();
 
             const string insertReservation = @"
-                INSERT INTO reservations (user_id, schedule_id, status, reserved_at)
-                VALUES (@UserId, @ScheduleId, @Status, @ReservedAt)
-                RETURNING id;
-            ";
-
+        INSERT INTO reservations (user_id, schedule_id, status, reserved_at)
+        VALUES (@UserId, @ScheduleId, @Status::reservation_status, @ReservedAt)
+        RETURNING id;
+    ";
             var reservationId = (Guid)(await _db.ExecuteScalarAsync(insertReservation, reservation, tx))!;
 
             foreach (var seatId in seatIds)
             {
                 const string insertSeat = @"
-                    INSERT INTO reservation_seats (reservation_id, seat_id)
-                    VALUES (@ReservationId, @SeatId);
-                ";
+            INSERT INTO reservation_seats (reservation_id, seat_id)
+            VALUES (@ReservationId, @SeatId);
+        ";
                 await _db.ExecuteAsync(insertSeat, new { ReservationId = reservationId, SeatId = seatId }, tx);
             }
 
@@ -40,7 +42,13 @@ namespace MyRestApi.Repositories
 
         public async Task<IEnumerable<Reservation>> GetReservationsByUser(Guid userId)
         {
-            const string sql = "SELECT * FROM reservations WHERE user_id = @UserId;";
+            const string sql = @"SELECT 
+                            id AS Id,
+                            user_id AS UserId,
+                            schedule_id AS ScheduleId,
+                            status AS Status,
+                            reserved_at AS ReservedAt
+             FROM reservations WHERE user_id = @UserId;";
             return await _db.QueryAsync<Reservation>(sql, new { UserId = userId });
         }
 
