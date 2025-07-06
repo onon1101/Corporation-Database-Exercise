@@ -45,12 +45,12 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetUserById(Guid id)
     {
         const string sql = @"SELECT * FROM users WHERE id = @Id;";
-        return await _db.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
+        return await _db.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
     }
     public async Task<User?> GetUserByEmail(string email)
     {
         const string sql_quire = @"SELECT * FROM users WHERE email = @Email";
-        return await _db.QuerySingleOrDefaultAsync<User>(sql_quire, new { Email = email });
+        return await _db.QueryFirstOrDefaultAsync<User>(sql_quire, new { Email = email });
     }
     public async Task PatchUser(User user)
     {

@@ -41,7 +41,11 @@ public class TheaterController : ControllerBase
         {
             return BadRequest(result);
         }
+
+        Guid test = result.Ok;
+        Console.WriteLine($"tttttttttttttttttt: {result.Ok}");
         return Ok(new { id = result.Ok });
+        // return Ok(new { Id = test });
     }
 
     /// <summary>
@@ -52,7 +56,7 @@ public class TheaterController : ControllerBase
     /// </remarks>
     /// <param name="id">電影院 ID</param>
     /// <returns>回傳訊息是否刪除成功</returns>
-    [HttpDelete("{id}")]
+    [HttpPost("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _service.DeleteTheaterAsync(id);
@@ -124,5 +128,5 @@ public class TheaterController : ControllerBase
         var seats = await _seatService.GetSeatsByTheaterAsync(id);
 
         return Ok(seats);
-    } 
+    }
 }
