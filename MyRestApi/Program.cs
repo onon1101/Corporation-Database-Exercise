@@ -16,6 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsEnvironment("Test"))
 {
     builder.Configuration.AddJsonFile("appsettings.Test.json");
+    
+}
+else
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    DbMigration.EnsureDatabase(connectionString);
 }
 
 builder.Services.AddControllers();
@@ -29,15 +35,14 @@ builder.Services.AddSwaggerGen(options =>
 // extension from MyRestApi Module.
 builder.Services.AddAppServices(builder.Configuration);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-DbMigration.EnsureDatabase(connectionString);
+
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger();
 }
 
 app.UseHttpsRedirection();
