@@ -16,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsEnvironment("Test"))
 {
     builder.Configuration.AddJsonFile("appsettings.Test.json");
-    
 }
 else
 {
@@ -42,7 +41,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -53,4 +52,4 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program { }
+public partial class Program { } 
