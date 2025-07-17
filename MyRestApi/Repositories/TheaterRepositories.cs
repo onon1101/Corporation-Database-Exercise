@@ -1,6 +1,7 @@
 using Dapper;
 using MyRestApi.Models;
 using System.Data;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MyRestApi.Repositories
 {
@@ -34,8 +35,12 @@ namespace MyRestApi.Repositories
 
         public async Task<bool> DeleteTheater(Guid id)
         {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+
+
             const string sql = "DELETE FROM theaters WHERE id = @Id";
-            return await _db.ExecuteAsync(sql, new { Id = id }) > 0;
+            return await _db.ExecuteAsync(sql, parameters) > 0;
         }
 
         public async Task<IEnumerable<Theater>> GetAllTheaters()

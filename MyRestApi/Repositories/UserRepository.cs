@@ -68,4 +68,5 @@ public class UserRepository : IUserRepository
         await _db.ExecuteAsync(sql, new { Id = id });
 
     }
+
 }
