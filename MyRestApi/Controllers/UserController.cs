@@ -40,17 +40,16 @@ public class UserController : ControllerBase
     /// <param name="dto">註冊資訊</param>
     /// <returns>回傳使用者基本資料與 ID</returns>
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] UserRegisterDTO registerRequest)
+    public async Task<IActionResult> Register([FromBody] UserRegisterDTO dto)
     {
-        var newUser = new User
+        var regUser = await _userService.RegisterUserAsync(dto);
+        if (!regUser.IsSuccess)
         {
-            Username = registerRequest.Username,
-            Email = registerRequest.Email,
-            Password = registerRequest.Password
-        };
+            return BadRequest(new { regUser });
+        }
+        Guid id = regUser.Ok;
 
-        var registeredUserId = await _userService.RegisterUserAsync(newUser);
-        var identity = _claimFactory.CreateIdentity(newUser, registeredUserId);
+        var identity = _claimFactory.CreateIdentity(dto, id);
         var jwtToken = _jwtGenerator.CreateToken(identity);
 
         return Ok(new { token = jwtToken });
@@ -68,10 +67,12 @@ public class UserController : ControllerBase
     [HttpPost("by-email")]
     public async Task<IActionResult> Login([FromBody] UserEmailLoginDTO dto) //TODO: ttt
     {
-        var user = await _userService.AuthenticateUserAsync(dto.Email, dto.Password);
-        if (user == null)
+        var result = await _userService.AuthenticateUserAsync(dto.Email, dto.Password);
+        if (!result.IsSuccess)
+        {
             return Unauthorized(new { message = "Invalid email or password" });
-
+        }
+        User user = result.Ok;
 
         var identity = _claimFactory.CreateIdentity(user, user.Id);
         var jwtToken = _jwtGenerator.CreateToken(identity);
@@ -90,10 +91,14 @@ public class UserController : ControllerBase
     [HttpPost("by-username")]
     public async Task<IActionResult> Login([FromBody] UsernameLoginDTO dto)
     {
-        var user = await _userService.AuthenticateUsernameAsync(dto.Username, dto.Password);
-        if (null == user)
+        var result = await _userService.AuthenticateUsernameAsync(dto.Username, dto.Password);
+        if (!result.IsSuccess)
+        {
             return Unauthorized(new { message = "Invalid email or password" });
-        Log.Warning($"msg: {user}");
+        }
+        var user = result.Ok;
+
+        // jwt
         var identity = _claimFactory.CreateIdentity(user, user.Id);
         var jwtToken = _jwtGenerator.CreateToken(identity);
 
@@ -125,10 +130,11 @@ public class UserController : ControllerBase
             return Unauthorized(new { message = "Invalid token: no user ID." });
 
         var userId = Guid.Parse(userIdClaim.Value);
-        var user = await _userService.GetUserById(userId);
-        if (user == null)
+        var result = await _userService.GetUserById(userId);
+        if (!result.IsSuccess)
             return NotFound(new { message = "User not found" });
 
+        User user = result.Ok;
         var response = new UserResponseDTO
         {
             Id = user.Id,

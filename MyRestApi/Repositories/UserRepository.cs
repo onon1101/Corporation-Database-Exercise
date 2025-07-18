@@ -1,6 +1,7 @@
 using Dapper;
 using System.Data;
 using MyRestApi.Models;
+using MyRestApi.DTO;
 
 namespace MyRestApi.Repositories;
 
@@ -19,13 +20,13 @@ public class UserRepository : IUserRepository
         var result = await _db.QuerySingleOrDefaultAsync<int?>(sql, new { Id = id });
         return result.HasValue;
     }
-    public async Task<bool> IsUserExist(User user)
+    public async Task<bool> IsUserExist(UserRegisterDTO user)
     {
-        const string sql = @"SELECT 1 FROM users WHERE id = @Id";
-        var result = await _db.QuerySingleOrDefaultAsync<int?>(sql, new { user.Id });
+        const string sql = @"SELECT 1 FROM users WHERE username = @Username AND email = @Email";
+        var result = await _db.QuerySingleOrDefaultAsync<int?>(sql, new { username = user.Username, email = user.Email });
         return result.HasValue;
     }
-    public async Task<Guid> CreateUser(User user)
+    public async Task<Result<Guid>> CreateUser(UserRegisterDTO user)
     {
         const string sqlQuire = @"INSERT INTO users (Username, Email, Password)
         VALUES (@Username, @Email, @Password)
@@ -40,7 +41,7 @@ public class UserRepository : IUserRepository
         {
             throw new Exception("Insert user failed: ID is null.");
         }
-        return id.Value;
+        return Result<Guid>.Success(id.Value);
     }
 
     public async Task<User?> GetUserById(Guid id)

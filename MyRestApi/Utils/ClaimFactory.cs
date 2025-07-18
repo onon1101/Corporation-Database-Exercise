@@ -4,11 +4,22 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Utils;
 using MyRestApi.Models;
+using MyRestApi.DTO;
 
 public class ClaimFactory
 {
 
     public ClaimsIdentity CreateIdentity(User user, Guid userId)
+    {
+        return new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("UserId", userId.ToString())
+        });
+    }
+
+    public ClaimsIdentity CreateIdentity(UserRegisterDTO user, Guid userId)
     {
         return new ClaimsIdentity(new[]
         {

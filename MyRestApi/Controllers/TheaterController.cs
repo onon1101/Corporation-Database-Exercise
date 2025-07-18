@@ -43,7 +43,6 @@ public class TheaterController : ControllerBase
         }
 
         Guid test = result.Ok;
-        Console.WriteLine($"tttttttttttttttttt: {result.Ok}");
         return Ok(new { id = result.Ok });
         // return Ok(new { Id = test });
     }

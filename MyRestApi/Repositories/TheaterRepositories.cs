@@ -1,6 +1,7 @@
 using Dapper;
 using MyRestApi.Models;
 using System.Data;
+using Utils;
 using System.Reflection.Metadata.Ecma335;
 
 namespace MyRestApi.Repositories
@@ -21,7 +22,7 @@ namespace MyRestApi.Repositories
 
             if (existingId.HasValue)
             {
-                return Result<Guid>.Fail("[Theater] the theater is existed.");
+                return Result<Guid>.Fail("[Theater] the theater is existed.", ErrorStatusCode.TheaterIsExisted);
             }
 
             const string sql = @"
