@@ -1,4 +1,4 @@
-using System.Reflection;
+
 using MyRestApi.Repositories;
 using MyRestApi.Services;
 using System.Data;
@@ -9,39 +9,28 @@ using Microsoft.EntityFrameworkCore;
 using MyRestApi.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MyRestApi.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Utils;
+using System.Reflection;
 
-// NpgsqlConnection.GlobalTypeMapper.MapEnum<ReservationStatus>();
+// initial logger
+Utils.Logger.Init();
 
-Log.Logger = new LoggerConfiguration()
-    // .MinimumLevel.Warning() // 設定最低等級
-    .MinimumLevel.Information() // 設定最低等級
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .CreateLogger();
-
+// create web service.
 var builder = WebApplication.CreateBuilder(args);
 
+// settings
 builder.Host.UseSerilog();
-
-if (builder.Environment.IsEnvironment("Test"))
-{
-    builder.Configuration.AddJsonFile("appsettings.Test.json");
-}
-else
-{
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    DbMigration.EnsureDatabase(connectionString);
-}
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-});
+builder.Services.AddSwaggerGen(SwaggerGenerator.Init);
+builder.Services.AddJwtAuthentication(builder.Configuration); // jwt initialize.
 
 // extension from MyRestApi Module.
 builder.Services.AddAppServices(builder.Configuration);
+
+builder.ConfigureEnvironmentAndDatabase(); // if the env is test, then ...
 
 var app = builder.Build();
 
@@ -54,7 +43,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
-// 掛載 Controller
+app.UseMiddleware<NotFoundHandlerMiddleware>();
+
 app.MapControllers();
 
 app.Run();

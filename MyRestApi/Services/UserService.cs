@@ -30,4 +30,7 @@ public class UserService : IUserService
     {
         return await _repo.GetUserById(id);
     }
+
+    public async Task DeleteUser(Guid id)
+    => await _repo.DeleteUser(id);
 }

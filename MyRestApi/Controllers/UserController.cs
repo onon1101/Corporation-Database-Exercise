@@ -2,6 +2,13 @@ using MyRestApi.DTO;
 using Microsoft.AspNetCore.Mvc;
 using MyRestApi.Models;
 using MyRestApi.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Utils;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace MyRestApi.Controllers;
 
@@ -9,11 +16,18 @@ namespace MyRestApi.Controllers;
 [Route("api/[controller]/[action]")]
 public class UserController : ControllerBase
 {
+    private readonly ClaimFactory _claimFactory;
+    private readonly JwtGenerator _jwtGenerator;
     private readonly IUserService _userService;
+    private readonly Env _env;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IConfiguration config)
     {
         _userService = userService;
+        // _env = parser(config;
+        _env = Parser.Init(config);
+        _jwtGenerator = new JwtGenerator(_env);
+        _claimFactory = new ClaimFactory();
     }
 
     /// <summary>
@@ -25,25 +39,20 @@ public class UserController : ControllerBase
     /// <param name="dto">註冊資訊</param>
     /// <returns>回傳使用者基本資料與 ID</returns>
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] UserRegisterDTO dto)
+    public async Task<IActionResult> Register([FromBody] UserRegisterDTO registerRequest)
     {
-        var user = new User
+        var newUser = new User
         {
-            Username = dto.Username,
-            Email = dto.Email,
-            Password = dto.Password
+            Username = registerRequest.Username,
+            Email = registerRequest.Email,
+            Password = registerRequest.Password
         };
 
-        var id = await _userService.RegisterUserAsync(user);
+        var registeredUserId = await _userService.RegisterUserAsync(newUser);
+        var identity = _claimFactory.CreateIdentity(newUser, registeredUserId);
+        var jwtToken = _jwtGenerator.CreateToken(identity);
 
-        var response = new UserResponseDTO
-        {
-            Id = id,
-            Username = user.Username,
-            Email = user.Email
-        };
-
-        return Ok(response);
+        return Ok(new { token = jwtToken });
     }
 
     /// <summary>
@@ -54,22 +63,26 @@ public class UserController : ControllerBase
     /// </remarks>
     /// <param name="dto">登入資訊</param>
     /// <returns>使用者資訊或 Unauthorized</returns>
+    // [Authorize]
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] UserLoginDTO dto)
     {
         var user = await _userService.AuthenticateUserAsync(dto.Email, dto.Password);
         if (user == null)
-        {
             return Unauthorized(new { message = "Invalid email or password" });
-        }
 
-        var response = new UserResponseDTO
+
+        var identity = _claimFactory.CreateIdentity(user, user.Id);
+        var jwtToken = _jwtGenerator.CreateToken(identity);
+
+        var response = new LoginResponseDTO
         {
+            Token = jwtToken,
             Id = user.Id,
             Username = user.Username,
             Email = user.Email
         };
-
+        
         return Ok(response);
     }
 
@@ -81,14 +94,18 @@ public class UserController : ControllerBase
     /// </remarks>
     /// <param name="id">使用者 ID</param>
     /// <returns>使用者資訊</returns>
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Profile(Guid id)
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Profile()
     {
-        var user = await _userService.GetUserById(id);
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
+        var userId = Guid.Parse(userIdClaim.Value);
+        var user = await _userService.GetUserById(userId);
         if (user == null)
-        {
             return NotFound(new { message = "User not found" });
-        }
 
         var response = new UserResponseDTO
         {
@@ -98,6 +115,24 @@ public class UserController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpDelete]
+    public async Task<IActionResult> DeleteUser()
+    {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
+        var userId = Guid.Parse(userIdClaim.Value);
+        var user = await _userService.GetUserById(userId);
+        if (user == null)
+            return NotFound(new { message = $"User with ID {userId} not found." });
+
+        await _userService.DeleteUser(userId);
+
+        return Ok(new { message = $"User with ID {userId} deleted successfully." });
     }
 }
 
