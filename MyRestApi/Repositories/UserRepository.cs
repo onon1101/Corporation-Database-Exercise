@@ -53,6 +53,13 @@ public class UserRepository : IUserRepository
         const string sql_quire = @"SELECT * FROM users WHERE email = @Email";
         return await _db.QueryFirstOrDefaultAsync<User>(sql_quire, new { Email = email });
     }
+    public async Task<User?> GetUserByName(string name)
+    {
+        const string sql = @"SELECT *
+        FROM users
+        WHERE username = @Username";
+        return await _db.QueryFirstOrDefaultAsync<User>(sql, new { Username = name });
+    }
     public async Task PatchUser(User user)
     {
         const string sql = @"UPDATE users

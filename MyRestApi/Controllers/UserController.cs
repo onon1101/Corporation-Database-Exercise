@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Utils;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Serilog;
 
 namespace MyRestApi.Controllers;
 
@@ -64,8 +65,8 @@ public class UserController : ControllerBase
     /// <param name="dto">登入資訊</param>
     /// <returns>使用者資訊或 Unauthorized</returns>
     // [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> Login([FromBody] UserLoginDTO dto)
+    [HttpPost("by-email")]
+    public async Task<IActionResult> Login([FromBody] UserEmailLoginDTO dto) //TODO: ttt
     {
         var user = await _userService.AuthenticateUserAsync(dto.Email, dto.Password);
         if (user == null)
@@ -82,7 +83,28 @@ public class UserController : ControllerBase
             Username = user.Username,
             Email = user.Email
         };
-        
+
+        return Ok(response);
+    }
+
+    [HttpPost("by-username")]
+    public async Task<IActionResult> Login([FromBody] UsernameLoginDTO dto)
+    {
+        var user = await _userService.AuthenticateUsernameAsync(dto.Username, dto.Password);
+        if (null == user)
+            return Unauthorized(new { message = "Invalid email or password" });
+        Log.Warning($"msg: {user}");
+        var identity = _claimFactory.CreateIdentity(user, user.Id);
+        var jwtToken = _jwtGenerator.CreateToken(identity);
+
+        var response = new LoginResponseDTO
+        {
+            Token = jwtToken,
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email
+        };
+
         return Ok(response);
     }
 
@@ -119,7 +141,7 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpDelete]
-    public async Task<IActionResult> DeleteUser()
+    public async Task<IActionResult> DeleteUser() //TODO: ...
     {
         var userIdClaim = User.FindFirst("UserId");
         if (userIdClaim == null)

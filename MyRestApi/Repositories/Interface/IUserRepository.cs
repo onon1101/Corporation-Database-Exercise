@@ -8,6 +8,7 @@ public interface IUserRepository
     Task<Guid> CreateUser(User user);
     Task<User?> GetUserById(Guid id);
     Task<User?> GetUserByEmail(string email);
+    Task<User?> GetUserByName(string name);
     Task PatchUser(User user);
     Task DeleteUser(Guid id);
 } 
