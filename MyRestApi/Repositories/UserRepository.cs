@@ -33,6 +33,7 @@ public class UserRepository : IUserRepository
         ";
 
         var result = await _db.ExecuteScalarAsync(sqlQuire, user);
+        // var result = await _db.QueryAsync(sqlQuire, user);
 
         Guid? id = result as Guid?;
         if (id == null)

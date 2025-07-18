@@ -7,29 +7,6 @@ namespace MyRestApi.Tests;
 
 public class UnitTest02_MovieService
 {
-
-    // Guid id = Guid.NewGuid();
-    // User user = new User
-    // {
-    //   Id = id,
-    //   Username = "testuser",
-    //   Email = "test@example.com",
-    //   Password = "securepassword"
-
-    // };
-    // var mockRepo = new Mock<IUserRepository>();
-    // mockRepo
-    //   .Setup(repo => repo.CreateUser(It.IsAny<User>()))
-    //   .ReturnsAsync(id);
-
-    // var services = new UserService(mockRepo.Object);
-
-    // // Act
-    // var result = await services.RegisterUserAsync(user);
-
-    // // Assert
-    // Assert.Equal(id, result);
-    // mockRepo.Verify(repo => repo.CreateUser(It.Is<User>(u => u.Username == "testuser")), Times.Once);
     [Fact]
     public async Task CreateMovie_ReturnSuccessMessage()
     {

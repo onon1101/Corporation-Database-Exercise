@@ -3,6 +3,7 @@ using MyRestApi.Repositories;
 using MyRestApi.Services;
 using System.Data;
 using Npgsql;
+using Serilog;
 using MyRestApi.Utils;
 using Microsoft.EntityFrameworkCore;
 using MyRestApi.Extensions;
@@ -11,7 +12,15 @@ using MyRestApi.Models;
 
 // NpgsqlConnection.GlobalTypeMapper.MapEnum<ReservationStatus>();
 
+Log.Logger = new LoggerConfiguration()
+    // .MinimumLevel.Warning() // 設定最低等級
+    .MinimumLevel.Information() // 設定最低等級
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 
 if (builder.Environment.IsEnvironment("Test"))
 {
@@ -34,8 +43,6 @@ builder.Services.AddSwaggerGen(options =>
 // extension from MyRestApi Module.
 builder.Services.AddAppServices(builder.Configuration);
 
-
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -52,4 +59,4 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program { } 
+public partial class Program { }

@@ -2,6 +2,7 @@
 using DbUp;
 using System;
 using System.Linq;
+using Serilog;
 
 namespace MyRestApi.Utils
 {
@@ -20,15 +21,18 @@ namespace MyRestApi.Utils
 
             if (!result.Successful)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(result.Error);
-                Console.ResetColor();
+                // Console.ForegroundColor = ConsoleColor.Red;
+                // Console.WriteLine(result.Error);
+                // Console.ResetColor();
+                Log.Error("Database migration failed");
                 throw new Exception("Database migration failed");
             }
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Database migration successful!");
-            Console.ResetColor();
+            // Console.ForegroundColor = ConsoleColor.Green;
+            // Console.WriteLine("Database migration successful!");
+            // Console.ResetColor(); 
+            Log.Information("Database migration successful!");
+            
         }
     }
 }
