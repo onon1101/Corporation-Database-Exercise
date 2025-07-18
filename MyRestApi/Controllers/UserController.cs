@@ -70,7 +70,7 @@ public class UserController : ControllerBase
         var result = await _userService.AuthenticateUserAsync(dto.Email, dto.Password);
         if (!result.IsSuccess)
         {
-            return Unauthorized(new { message = "Invalid email or password" });
+            return Unauthorized(new { result });
         }
         User user = result.Ok;
 
@@ -94,7 +94,7 @@ public class UserController : ControllerBase
         var result = await _userService.AuthenticateUsernameAsync(dto.Username, dto.Password);
         if (!result.IsSuccess)
         {
-            return Unauthorized(new { message = "Invalid email or password" });
+            return Unauthorized(new { result });
         }
         var user = result.Ok;
 
@@ -132,7 +132,7 @@ public class UserController : ControllerBase
         var userId = Guid.Parse(userIdClaim.Value);
         var result = await _userService.GetUserById(userId);
         if (!result.IsSuccess)
-            return NotFound(new { message = "User not found" });
+            return NotFound(new { result });
 
         User user = result.Ok;
         var response = new UserResponseDTO
