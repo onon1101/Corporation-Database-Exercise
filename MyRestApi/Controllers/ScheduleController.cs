@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyRestApi.DTO;
 using MyRestApi.Models;
@@ -25,8 +26,13 @@ public class ScheduleController : ControllerBase
     /// <param name="dto">場次建立資料</param>
     /// <returns>新建立的場次 ID</returns>
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateScheduleDTO dto)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var schedule = new Schedule
         {
             MovieId = dto.MovieId,
@@ -47,8 +53,13 @@ public class ScheduleController : ControllerBase
     /// </remarks>
     /// <returns>場次清單</returns>
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> All()
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var schedules = await _service.GetAllSchedulesAsync();
         return Ok(schedules);
     }
@@ -62,8 +73,14 @@ public class ScheduleController : ControllerBase
     /// <param name="movieId">電影 ID</param>
     /// <returns>該電影的場次列表</returns>
     [HttpGet("{movieId}")]
+    [Authorize]
     public async Task<IActionResult> ByMovie(Guid movieId)
     {
+
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var schedules = await _service.GetSchedulesByMovieAsync(movieId);
         return Ok(schedules);
     }
@@ -77,11 +94,17 @@ public class ScheduleController : ControllerBase
     /// <param name="id">場次 ID</param>
     /// <returns>刪除結果</returns>
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
+
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var success = await _service.DeleteScheduleAsync(id);
-        if (!success)
-            return NotFound(new { message = "Schedule not found" });
+        if (!success.IsSuccess)
+            return NotFound(success);
 
         return Ok(new { message = "Schedule deleted" });
     }

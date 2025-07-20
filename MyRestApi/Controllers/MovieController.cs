@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyRestApi.DTO;
 using MyRestApi.Models;
@@ -25,8 +26,13 @@ public class MovieController : ControllerBase
     /// <param name="dto">電影建立資料</param>
     /// <returns>新電影的 ID</returns>
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateMovieDTO dto)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var movie = new Movie
         {
             Title = dto.Title,
@@ -80,8 +86,13 @@ public class MovieController : ControllerBase
     /// <param name="dto">更新資料</param>
     /// <returns>更新結果</returns>
     [HttpPatch("{id}")]
+    [Authorize]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateMovieDTO dto)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var movie = new Movie
         {
             Title = dto.Title,
@@ -92,8 +103,8 @@ public class MovieController : ControllerBase
         };
 
         var success = await _service.UpdateMovieAsync(id, movie);
-        if (!success)
-            return NotFound(new { message = "Movie not found" });
+        if (!success.IsSuccess)
+            return NotFound(success);
 
         return Ok(new { message = "Movie updated" });
     }
@@ -107,11 +118,16 @@ public class MovieController : ControllerBase
     /// <param name="id">電影 ID</param>
     /// <returns>刪除結果</returns>
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var success = await _service.DeleteMovieAsync(id);
-        if (!success)
-            return NotFound(new { message = "Movie not found" });
+        if (!success.IsSuccess)
+            return NotFound(success);
 
         return Ok(new { message = "Movie deleted" });
     }

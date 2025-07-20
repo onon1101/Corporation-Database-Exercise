@@ -19,7 +19,39 @@ namespace MyRestApi.Repositories
                 INSERT INTO seats (theater_id, seat_number)
                 VALUES (@TheaterId, @SeatNumber)
                 RETURNING id;";
-            return (Guid)(await _db.ExecuteScalarAsync(sql, seat))!;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("TheaterId", seat.TheaterId, DbType.Guid);
+            parameters.Add("SeatNumber", seat.SeatNumber, DbType.String);
+
+            return (Guid)(await _db.ExecuteScalarAsync(sql, parameters))!;
+        }
+
+        public async Task<List<Guid>> CreateSeatsBulk(IEnumerable<Seat> seats)
+        {
+            var seatIds = new List<Guid>();
+            const string sql = @"
+                INSERT INTO seats (theater_id, seat_number)
+                VALUES (@TheaterId, @SeatNumber)
+                RETURNING id;";
+
+            if (_db.State != ConnectionState.Open)
+                _db.Open();
+
+            using var tx = _db.BeginTransaction();
+
+            foreach (var seat in seats)
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("TheaterId", seat.TheaterId, DbType.Guid);
+                parameters.Add("SeatNumber", seat.SeatNumber, DbType.String);
+
+                var id = (Guid)(await _db.ExecuteScalarAsync(sql, parameters, tx))!;
+                seatIds.Add(id);
+            }
+
+            tx.Commit();
+            return seatIds;
         }
 
         public async Task<IEnumerable<Seat>> GetSeatsByTheater(Guid theaterId)
@@ -29,13 +61,20 @@ namespace MyRestApi.Repositories
                 theater_id AS TheaterId, 
                 seat_number AS SeatNumber
              FROM seats WHERE theater_id = @TheaterId;";
-            return await _db.QueryAsync<Seat>(sql, new { TheaterId = theaterId });
+
+            var parameters = new DynamicParameters();
+            parameters.Add("TheaterId", theaterId, DbType.Guid);
+
+            return await _db.QueryAsync<Seat>(sql, parameters);
         }
 
         public async Task<bool> DeleteSeat(Guid id)
         {
             const string sql = "DELETE FROM seats WHERE id = @Id;";
-            return await _db.ExecuteAsync(sql, new { Id = id }) > 0;
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+
+            return await _db.ExecuteAsync(sql, parameters) > 0;
         }
     }
 }

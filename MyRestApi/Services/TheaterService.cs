@@ -1,5 +1,6 @@
 using MyRestApi.Models;
 using MyRestApi.Repositories;
+using Utils;
 
 namespace MyRestApi.Services
 {
@@ -16,27 +17,35 @@ namespace MyRestApi.Services
 
         public async Task<Result<Guid>> CreateTheaterAsync(Theater theater)
         {
-            Result<Guid> createTheater = await _repo.CreateTheater(theater);
+            var isExist = await _repo.IsTheaterExist(theater);
 
+            if (isExist)
+            {
+                return Result<Guid>.Fail("[theater] ", ErrorStatusCode.UserIsExisted);
+            }
+
+            Result<Guid> createTheater = await _repo.CreateTheater(theater);
             if (!createTheater.IsSuccess)
             {
                 return createTheater;
             }
 
-            Guid theaterId = createTheater.Ok;
+            Guid theaterId = createTheater.Payload;
 
-            for (int i = 1; i < theater.TotalSeats + 1; i++)
+            var seats = new List<Seat>();
+            for (int i = 1; i <= theater.TotalSeats; i++)
             {
-                var seat = new Seat
+                seats.Add(new Seat
                 {
                     TheaterId = theaterId,
                     SeatNumber = i.ToString()
-                };
-                await _seatRepo.CreateSeat(seat);
+                });
             }
-            
+
+            await _seatRepo.CreateSeatsBulk(seats); 
+
             return Result<Guid>.Success(theaterId);
-        } 
+        }
 
         public Task<bool> DeleteTheaterAsync(Guid id)
             => _repo.DeleteTheater(id);

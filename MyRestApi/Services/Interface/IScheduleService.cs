@@ -4,9 +4,9 @@ namespace MyRestApi.Services
 {
     public interface IScheduleService
     {
-        Task<Guid> CreateScheduleAsync(Schedule schedule);
-        Task<IEnumerable<Schedule>> GetAllSchedulesAsync();
-        Task<IEnumerable<Schedule>> GetSchedulesByMovieAsync(Guid movieId);
-        Task<bool> DeleteScheduleAsync(Guid id);
+        Task<Result<Guid>> CreateScheduleAsync(Schedule schedule);
+        Task<Result<IEnumerable<Schedule>>> GetAllSchedulesAsync();
+        Task<Result<IEnumerable<Schedule>>> GetSchedulesByMovieAsync(Guid movieId);
+        Task<Result<bool>> DeleteScheduleAsync(Guid id);
     }
 }

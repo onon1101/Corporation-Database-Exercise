@@ -12,13 +12,22 @@ namespace MyRestApi.Services
             _repo = repo;
         }
 
-        public Task<Guid> CreateReservationAsync(Reservation reservation, List<Guid> seatIds)
-            => _repo.CreateReservation(reservation, seatIds);
+        public async Task<Result<Guid>> CreateReservationAsync(Reservation reservation, List<Guid> seatIds)
+        {
+            var id = await _repo.CreateReservation(reservation, seatIds);
+            return Result<Guid>.Success(id);
+        }
 
-        public Task<IEnumerable<Reservation>> GetReservationsByUserAsync(Guid userId)
-            => _repo.GetReservationsByUser(userId);
+        public async Task<Result<IEnumerable<Reservation>>> GetReservationsByUserAsync(Guid userId)
+        {
+            var list = await _repo.GetReservationsByUser(userId);
+            return Result<IEnumerable<Reservation>>.Success(list);
+        }
 
-        public Task<bool> DeleteReservationAsync(Guid id)
-            => _repo.DeleteReservation(id);
+        public async Task<Result<bool>> DeleteReservationAsync(Guid id)
+        {
+            var ok = await _repo.DeleteReservation(id);
+            return Result<bool>.Success(ok);
+        }
     }
 }

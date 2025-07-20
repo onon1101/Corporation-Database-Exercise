@@ -45,9 +45,9 @@ public class UserController : ControllerBase
         var regUser = await _userService.RegisterUserAsync(dto);
         if (!regUser.IsSuccess)
         {
-            return BadRequest(new { regUser });
+            return BadRequest(regUser);
         }
-        Guid id = regUser.Ok;
+        Guid id = regUser.Payload;
 
         var identity = _claimFactory.CreateIdentity(dto, id);
         var jwtToken = _jwtGenerator.CreateToken(identity);
@@ -72,7 +72,7 @@ public class UserController : ControllerBase
         {
             return Unauthorized(new { result });
         }
-        User user = result.Ok;
+        User user = result.Payload;
 
         var identity = _claimFactory.CreateIdentity(user, user.Id);
         var jwtToken = _jwtGenerator.CreateToken(identity);
@@ -94,9 +94,9 @@ public class UserController : ControllerBase
         var result = await _userService.AuthenticateUsernameAsync(dto.Username, dto.Password);
         if (!result.IsSuccess)
         {
-            return Unauthorized(new { result });
+            return Unauthorized(result);
         }
-        var user = result.Ok;
+        var user = result.Payload;
 
         // jwt
         var identity = _claimFactory.CreateIdentity(user, user.Id);
@@ -110,7 +110,31 @@ public class UserController : ControllerBase
             Email = user.Email
         };
 
-        return Ok(response);
+        return Ok(Result<LoginResponseDTO>.Success(response));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login([FromBody] UserLoginEmailOrUname dto)
+    {
+        var result = await _userService.AuthenticateUserMutilAsync(dto);
+        if (!result.IsSuccess)
+        {
+            return Unauthorized(result);
+        }
+        var user = result.Payload;
+
+        var identity = _claimFactory.CreateIdentity(user, user.Id);
+        var jwtToken = _jwtGenerator.CreateToken(identity);
+
+        var response = new LoginResponseDTO
+        {
+            Token = jwtToken,
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email
+        };
+
+        return Ok(Result<LoginResponseDTO>.Success(response));
     }
 
     /// <summary>
@@ -132,9 +156,9 @@ public class UserController : ControllerBase
         var userId = Guid.Parse(userIdClaim.Value);
         var result = await _userService.GetUserById(userId);
         if (!result.IsSuccess)
-            return NotFound(new { result });
+            return NotFound(result);
 
-        User user = result.Ok;
+        User user = result.Payload;
         var response = new UserResponseDTO
         {
             Id = user.Id,

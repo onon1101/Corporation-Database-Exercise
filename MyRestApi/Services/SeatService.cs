@@ -12,8 +12,22 @@ namespace MyRestApi.Services
             _repo = repo;
         }
 
-        public Task<Guid> CreateSeatAsync(Seat seat) => _repo.CreateSeat(seat);
-        public Task<IEnumerable<Seat>> GetSeatsByTheaterAsync(Guid theaterId) => _repo.GetSeatsByTheater(theaterId);
-        public Task<bool> DeleteSeatAsync(Guid id) => _repo.DeleteSeat(id);
+        public async Task<Result<Guid>> CreateSeatAsync(Seat seat)
+        {
+            var result = await _repo.CreateSeat(seat);
+            return Result<Guid>.Success(result);
+        }
+
+        public async Task<Result<IEnumerable<Seat>>> GetSeatsByTheaterAsync(Guid theaterId)
+        {
+            var result = await _repo.GetSeatsByTheater(theaterId);
+            return Result<IEnumerable<Seat>>.Success(result);
+        }
+
+        public async Task<Result<bool>> DeleteSeatAsync(Guid id)
+        {
+            var result = await _repo.DeleteSeat(id);
+            return Result<bool>.Success(result);
+        }
     }
 }

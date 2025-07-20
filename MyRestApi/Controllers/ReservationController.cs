@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyRestApi.DTO;
 using MyRestApi.Models;
@@ -7,6 +8,7 @@ namespace MyRestApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[Authorize]
 public class ReservationController : ControllerBase
 {
     private readonly IReservationService _service;
@@ -27,6 +29,10 @@ public class ReservationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateReservationDTO dto)
     {
+                var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var reservation = new Reservation
         {
             UserId = dto.UserId,
@@ -48,6 +54,10 @@ public class ReservationController : ControllerBase
     [HttpGet("{userId}")]
     public async Task<IActionResult> ByUser(Guid userId)
     {
+                var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var reservations = await _service.GetReservationsByUserAsync(userId);
         return Ok(reservations);
     }
@@ -61,11 +71,16 @@ public class ReservationController : ControllerBase
     /// <param name="id">訂位 ID</param>
     /// <returns>刪除成功與否</returns>
     [HttpDelete("{id}")]
+    
     public async Task<IActionResult> Delete(Guid id)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var success = await _service.DeleteReservationAsync(id);
-        if (!success)
-            return NotFound(new { message = "Reservation not found" });
+        if (!success.IsSuccess)
+            return NotFound(success);
 
         return Ok(new { message = "Reservation deleted" });
     }

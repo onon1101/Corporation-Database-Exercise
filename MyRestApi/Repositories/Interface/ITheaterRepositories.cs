@@ -4,6 +4,7 @@ namespace MyRestApi.Repositories
 {
     public interface ITheaterRepository
     {
+        Task<bool> IsTheaterExist(Theater theater);
         Task<Result<Guid>> CreateTheater(Theater theater);
         Task<bool> DeleteTheater(Guid id);
         Task<IEnumerable<Theater>> GetAllTheaters();

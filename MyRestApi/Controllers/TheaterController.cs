@@ -1,13 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyRestApi.DTO;
 using MyRestApi.Models;
-using MyRestApi.Repositories;
 using MyRestApi.Services;
 
 namespace MyRestApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+
 public class TheaterController : ControllerBase
 {
     private readonly ITheaterService _service;
@@ -27,9 +28,14 @@ public class TheaterController : ControllerBase
     /// </remarks>
     /// <param name="dto">創建電影院資訊</param>
     /// <returns>回傳戲院 ID</returns>
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTheaterDTO dto)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var theater = new Theater
         {
             Name = dto.Name,
@@ -42,9 +48,7 @@ public class TheaterController : ControllerBase
             return BadRequest(result);
         }
 
-        Guid test = result.Ok;
-        return Ok(new { id = result.Ok });
-        // return Ok(new { Id = test });
+        return Ok(new { id = result.Payload });
     }
 
     /// <summary>
@@ -56,8 +60,13 @@ public class TheaterController : ControllerBase
     /// <param name="id">電影院 ID</param>
     /// <returns>回傳訊息是否刪除成功</returns>
     [HttpPost("{id}")]
+    [Authorize]
     public async Task<IActionResult> Delete(Guid id)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var result = await _service.DeleteTheaterAsync(id);
         if (!result)
             return NotFound(new { message = "Theater not found" });
@@ -94,7 +103,6 @@ public class TheaterController : ControllerBase
             return NotFound(new { message = "Theater not found" });
         return Ok(theater);
     }
-
     /// <summary>
     /// 更新電影院的資訊
     /// </summary>
@@ -105,8 +113,13 @@ public class TheaterController : ControllerBase
     /// <param name="dto">修改電影院之相關資訓</param>
     /// <returns>是否修改成功</returns>
     [HttpPatch("{id}")]
+    [Authorize]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTheaterDTO dto)
     {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+            return Unauthorized(new { message = "Invalid token: no user ID." });
+
         var data = new Theater
         {
             Name = dto.Name,
@@ -125,7 +138,6 @@ public class TheaterController : ControllerBase
     public async Task<IActionResult> GetSeatAll(Guid id)
     {
         var seats = await _seatService.GetSeatsByTheaterAsync(id);
-
         return Ok(seats);
     }
 }

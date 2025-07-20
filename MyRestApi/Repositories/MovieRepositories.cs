@@ -20,7 +20,15 @@ namespace MyRestApi.Repositories
                 VALUES (@Title, @Description, @Duration, @Rating, @PosterUrl)
                 RETURNING id;
             ";
-            return (Guid)(await _db.ExecuteScalarAsync(sql, movie))!;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Title", movie.Title, DbType.String);
+            parameters.Add("Description", movie.Description, DbType.String);
+            parameters.Add("Duration", movie.Duration, DbType.Int32);
+            parameters.Add("Rating", movie.Rating, DbType.String);
+            parameters.Add("PosterUrl", movie.PosterUrl, DbType.String);
+
+            return (Guid)(await _db.ExecuteScalarAsync(sql, parameters))!;
         }
 
         public async Task<IEnumerable<Movie>> GetAllMovies()
@@ -32,7 +40,10 @@ namespace MyRestApi.Repositories
         public async Task<Movie?> GetMovieById(Guid id)
         {
             const string sql = "SELECT * FROM movies WHERE id = @Id;";
-            return await _db.QueryFirstOrDefaultAsync<Movie>(sql, new { Id = id });
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+
+            return await _db.QueryFirstOrDefaultAsync<Movie>(sql, parameters);
         }
 
         public async Task<bool> UpdateMovie(Guid id, Movie movie)
@@ -46,21 +57,25 @@ namespace MyRestApi.Repositories
                     poster_url = COALESCE(@PosterUrl, poster_url)
                 WHERE id = @Id;
             ";
-            return await _db.ExecuteAsync(sql, new
-            {
-                Id = id,
-                movie.Title,
-                movie.Description,
-                movie.Duration,
-                movie.Rating,
-                movie.PosterUrl
-            }) > 0;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+            parameters.Add("Title", movie.Title, DbType.String);
+            parameters.Add("Description", movie.Description, DbType.String);
+            parameters.Add("Duration", movie.Duration, DbType.Int32);
+            parameters.Add("Rating", movie.Rating, DbType.String);
+            parameters.Add("PosterUrl", movie.PosterUrl, DbType.String);
+
+            return await _db.ExecuteAsync(sql, parameters) > 0;
         }
 
         public async Task<bool> DeleteMovie(Guid id)
         {
             const string sql = "DELETE FROM movies WHERE id = @Id;";
-            return await _db.ExecuteAsync(sql, new { Id = id }) > 0;
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+
+            return await _db.ExecuteAsync(sql, parameters) > 0;
         }
     }
 }

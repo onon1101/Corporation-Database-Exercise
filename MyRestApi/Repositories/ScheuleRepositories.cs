@@ -20,39 +20,55 @@ namespace MyRestApi.Repositories
                 VALUES (@MovieId, @TheaterId, @StartTime, @EndTime)
                 RETURNING id;
             ";
-            return (Guid)(await _db.ExecuteScalarAsync(sql, schedule))!;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("MovieId", schedule.MovieId, DbType.Guid);
+            parameters.Add("TheaterId", schedule.TheaterId, DbType.Guid);
+            parameters.Add("StartTime", schedule.StartTime, DbType.DateTime);
+            parameters.Add("EndTime", schedule.EndTime, DbType.DateTime);
+
+            return (Guid)(await _db.ExecuteScalarAsync(sql, parameters))!;
         }
 
         public async Task<IEnumerable<Schedule>> GetAllSchedules()
         {
-            const string sql = @"SELECT 
-    id,
-    movie_id AS MovieId,
-    theater_id AS TheaterId,
-    start_time AS StartTime,
-    end_time AS EndTime
-FROM schedules";
+            const string sql = @"
+                SELECT 
+                    id,
+                    movie_id AS MovieId,
+                    theater_id AS TheaterId,
+                    start_time AS StartTime,
+                    end_time AS EndTime
+                FROM schedules";
             return await _db.QueryAsync<Schedule>(sql);
         }
 
         public async Task<IEnumerable<Schedule>> GetSchedulesByMovie(Guid movieId)
         {
             const string sql = @"
-SELECT 
-    id,
-    movie_id AS MovieId,
-    theater_id AS TheaterId,
-    start_time AS StartTime,
-    end_time AS EndTime
-FROM schedules
-WHERE movie_id = @MovieId;";
-            return await _db.QueryAsync<Schedule>(sql, new { MovieId = movieId });
+                SELECT 
+                    id,
+                    movie_id AS MovieId,
+                    theater_id AS TheaterId,
+                    start_time AS StartTime,
+                    end_time AS EndTime
+                FROM schedules
+                WHERE movie_id = @MovieId;";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("MovieId", movieId, DbType.Guid);
+
+            return await _db.QueryAsync<Schedule>(sql, parameters);
         }
 
         public async Task<bool> DeleteSchedule(Guid id)
         {
             const string sql = "DELETE FROM schedules WHERE id = @Id;";
-            return await _db.ExecuteAsync(sql, new { Id = id }) > 0;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+
+            return await _db.ExecuteAsync(sql, parameters) > 0;
         }
     }
 }

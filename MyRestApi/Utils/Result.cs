@@ -2,7 +2,7 @@ using Utils;
 
 public class Result<T>
 {
-    public T? Ok { get; }
+    public T? Payload { get; }
 
     public ErrorStatusCode? StatusCode { get; }
     public string? Error { get; }
@@ -10,7 +10,7 @@ public class Result<T>
 
     private Result(T? ok, string? error, ErrorStatusCode? status)
     {
-        Ok = ok;
+        Payload = ok;
         Error = error;
         StatusCode = status;
     }

@@ -2,7 +2,6 @@ using Dapper;
 using MyRestApi.Models;
 using System.Data;
 using Utils;
-using System.Reflection.Metadata.Ecma335;
 
 namespace MyRestApi.Repositories
 {
@@ -15,30 +14,45 @@ namespace MyRestApi.Repositories
             _db = db;
         }
 
+        public async Task<bool> IsTheaterExist(Theater theater)
+        {
+            const string sql = @"
+            SELECT 1 
+            FROM theaters
+            WHERE
+                name = @Name 
+                OR location = @Location
+            ";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", theater.Name, DbType.String);
+            parameters.Add("Location", theater.Location, DbType.String);
+
+            var result = await _db.ExecuteScalarAsync<Guid?>(sql, parameters);
+            return result != null;
+        }
+
         public async Task<Result<Guid>> CreateTheater(Theater theater)
         {
-            const string checkSql = @"SELECT id, name FROM theaters WHERE name = @Name OR location = @Location";
-            var existingId = await _db.ExecuteScalarAsync<Guid?>(checkSql, new { name = theater.Name, location = theater.Location });
-
-            if (existingId.HasValue)
-            {
-                return Result<Guid>.Fail("[Theater] the theater is existed.", ErrorStatusCode.TheaterIsExisted);
-            }
-
             const string sql = @"
                 INSERT INTO theaters (name, location, total_seats)
                 VALUES (@Name, @Location, @TotalSeats)
                 RETURNING id;
             ";
 
-            return Result<Guid>.Success((Guid)(await _db.ExecuteScalarAsync(sql, theater))!);
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", theater.Name, DbType.String);
+            parameters.Add("Location", theater.Location, DbType.String);
+            parameters.Add("TotalSeats", theater.TotalSeats, DbType.Int32);
+
+            var result = await _db.ExecuteScalarAsync(sql, parameters);
+            return Result<Guid>.Success((Guid)result!);
         }
 
         public async Task<bool> DeleteTheater(Guid id)
         {
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Guid);
-
 
             const string sql = "DELETE FROM theaters WHERE id = @Id";
             return await _db.ExecuteAsync(sql, parameters) > 0;
@@ -53,7 +67,11 @@ namespace MyRestApi.Repositories
         public async Task<Theater?> GetTheaterById(Guid id)
         {
             const string sql = "SELECT id, name, location, total_seats AS TotalSeats FROM theaters WHERE id = @Id";
-            return await _db.QueryFirstOrDefaultAsync<Theater>(sql, new { Id = id });
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+
+            return await _db.QueryFirstOrDefaultAsync<Theater>(sql, parameters);
         }
 
         public async Task<bool> UpdateTheater(Guid id, Theater data)
@@ -65,13 +83,14 @@ namespace MyRestApi.Repositories
                     total_seats = COALESCE(@TotalSeats, total_seats)
                 WHERE id = @Id;
             ";
-            return await _db.ExecuteAsync(sql, new
-            {
-                Id = id,
-                data.Name,
-                data.Location,
-                data.TotalSeats
-            }) > 0;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Guid);
+            parameters.Add("Name", data.Name, DbType.String);
+            parameters.Add("Location", data.Location, DbType.String);
+            parameters.Add("TotalSeats", data.TotalSeats, DbType.Int32);
+
+            return await _db.ExecuteAsync(sql, parameters) > 0;
         }
     }
 }
