@@ -1,3 +1,4 @@
+using MyRestApi.DTO;
 using MyRestApi.Models;
 using MyRestApi.Repositories;
 
@@ -12,8 +13,16 @@ namespace MyRestApi.Services
             _repo = repo;
         }
 
-        public async Task<Result<Guid>> CreateMovieAsync(Movie movie)
+        public async Task<Result<Guid>> CreateMovieAsync(CreateMovieDTO dto)
         {
+            var movie = new Movie
+        {
+            Title = dto.Title,
+            Description = dto.Description,
+            Duration = dto.Duration,
+            Rating = dto.Rating,
+            PosterUrl = dto.PosterUrl
+        };
             var id = await _repo.CreateMovie(movie);
             return Result<Guid>.Success(id);
         }

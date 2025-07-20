@@ -33,15 +33,7 @@ public class ScheduleController : ControllerBase
         if (userIdClaim == null)
             return Unauthorized(new { message = "Invalid token: no user ID." });
 
-        var schedule = new Schedule
-        {
-            MovieId = dto.MovieId,
-            TheaterId = dto.TheaterId,
-            StartTime = dto.StartTime,
-            EndTime = dto.EndTime
-        };
-
-        var id = await _service.CreateScheduleAsync(schedule);
+        var id = await _service.CreateScheduleAsync(dto);
         return Ok(new { id });
     }
 

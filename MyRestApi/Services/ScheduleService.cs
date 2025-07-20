@@ -1,3 +1,4 @@
+using MyRestApi.DTO;
 using MyRestApi.Models;
 using MyRestApi.Repositories;
 
@@ -12,8 +13,16 @@ namespace MyRestApi.Services
             _repo = repo;
         }
 
-        public async Task<Result<Guid>> CreateScheduleAsync(Schedule schedule)
+        public async Task<Result<Guid>> CreateScheduleAsync(CreateScheduleDTO dto)
         {
+            var schedule = new Schedule
+            {
+                MovieId = dto.MovieId,
+                TheaterId = dto.TheaterId,
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime
+            };
+
             var id = await _repo.CreateSchedule(schedule);
             return Result<Guid>.Success(id);
         }

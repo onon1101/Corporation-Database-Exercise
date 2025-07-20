@@ -36,13 +36,7 @@ public class TheaterController : ControllerBase
         if (userIdClaim == null)
             return Unauthorized(new { message = "Invalid token: no user ID." });
 
-        var theater = new Theater
-        {
-            Name = dto.Name,
-            Location = dto.Location,
-            TotalSeats = dto.TotalSeats
-        };
-        var result = await _service.CreateTheaterAsync(theater);
+        var result = await _service.CreateTheaterAsync(dto);
         if (!result.IsSuccess)
         {
             return BadRequest(result);

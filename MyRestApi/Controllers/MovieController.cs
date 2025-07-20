@@ -33,15 +33,7 @@ public class MovieController : ControllerBase
         if (userIdClaim == null)
             return Unauthorized(new { message = "Invalid token: no user ID." });
 
-        var movie = new Movie
-        {
-            Title = dto.Title,
-            Description = dto.Description,
-            Duration = dto.Duration,
-            Rating = dto.Rating,
-            PosterUrl = dto.PosterUrl
-        };
-        var id = await _service.CreateMovieAsync(movie);
+        var id = await _service.CreateMovieAsync(dto);
         return Ok(new { id });
     }
 

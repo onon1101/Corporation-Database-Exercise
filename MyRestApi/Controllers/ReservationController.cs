@@ -33,13 +33,8 @@ public class ReservationController : ControllerBase
         if (userIdClaim == null)
             return Unauthorized(new { message = "Invalid token: no user ID." });
 
-        var reservation = new Reservation
-        {
-            UserId = dto.UserId,
-            ScheduleId = dto.ScheduleId
-        };
-
-        var id = await _service.CreateReservationAsync(reservation, dto.SeatIds);
+        var id = await _service.CreateReservationAsync(dto);
+        
         return Ok(new { id });
     }
 

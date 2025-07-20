@@ -1,3 +1,4 @@
+using MyRestApi.DTO;
 using MyRestApi.Models;
 using MyRestApi.Repositories;
 using Utils;
@@ -15,8 +16,15 @@ namespace MyRestApi.Services
             _seatRepo = seatRepo;
         }
 
-        public async Task<Result<Guid>> CreateTheaterAsync(Theater theater)
+        // public async Task<Result<Guid>> CreateTheaterAsync(Theater theater)
+        public async Task<Result<Guid>> CreateTheaterAsync(CreateTheaterDTO dto)
         {
+            var theater = new Theater
+            {
+                Name = dto.Name,
+                Location = dto.Location,
+                TotalSeats = dto.TotalSeats
+            };
             var isExist = await _repo.IsTheaterExist(theater);
 
             if (isExist)
