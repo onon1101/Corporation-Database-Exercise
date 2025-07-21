@@ -91,9 +91,24 @@ public class UserRepository : IUserRepository
 
     public async Task DeleteUser(Guid id)
     {
-        const string sql = @"DELETE FROM users WHERE id = @Id";
+        // const string sql = @"DELETE FROM users WHERE id = @Id";
+        const string sql = @"UPDATE users
+                             SET is_deleted = TRUE
+                             WHERE id = @Id";
         var parameters = new DynamicParameters();
         parameters.Add("Id", id, DbType.Guid);
         await _db.ExecuteAsync(sql, parameters);
+    }
+
+    public async Task<UserRole> GetUserPermission(Guid userId)
+    {
+        const string sql = @"SELECT permission
+                             FROM users
+                             WHERE id = @Id";
+
+        var parameters = new DynamicParameters();
+        parameters.Add("Id", DbType.Guid);
+        var userPermissionCode = await _db.QueryFirstOrDefaultAsync<int>(sql, parameters);
+        return (UserRole)userPermissionCode;
     }
 }

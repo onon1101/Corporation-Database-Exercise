@@ -12,4 +12,5 @@ public interface IUserRepository
     Task<User?> GetUserByName(string name);
     Task PatchUser(User user);
     Task DeleteUser(Guid id);
+    Task<UserRole> GetUserPermission(Guid userId);
 } 

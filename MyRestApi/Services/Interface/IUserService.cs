@@ -11,4 +11,5 @@ public interface IUserService
     Task<Result<User>> AuthenticateUsernameAsync(string name, string password);
     Task<Result<User>> GetUserById(Guid id);
     Task DeleteUser(Guid id);
+    Task<Result<bool>> HasSufficientPermission(Guid userId, UserRole role);
 }

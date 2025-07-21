@@ -48,7 +48,7 @@ namespace MyRestApi.Tests
             Assert.True(result);
         }
 
-//error Message: System.NotSupportedException : Specified method is not supported.
+        //error Message: System.NotSupportedException : Specified method is not supported.
         // [Fact]
         // public async Task CreateUser_ReturnsUserId()
         // {
@@ -133,7 +133,7 @@ namespace MyRestApi.Tests
             Assert.Null(ex);
         }
 
-//error Message: System.NotSupportedException : Specified method is not supported.
+        //error Message: System.NotSupportedException : Specified method is not supported.
         // [Fact]
         // public async Task CreateUser_WhenExecuteScalarReturnsNull_ThrowsException()
         // {
@@ -164,5 +164,30 @@ namespace MyRestApi.Tests
 
             Assert.Null(result);
         }
+
+        // [Fact]
+        // public async Task DeleteUser_Should_Execute_Delete_Query()
+        // {
+        //     // Arrange
+        //     var mockDb = new Mock<IDbConnection>();
+        //     var userId = Guid.NewGuid();
+
+        //     // Mock ExecuteAsync 回傳 1（表示有一筆資料被刪除）
+        //     mockDb.Setup(db => db.ExecuteAsync(
+        //         It.IsAny<string>(),
+        //         It.IsAny<object>(),
+        //         null, null, null)).ReturnsAsync(1);
+
+        //     var repo = new UserRepository(mockDb.Object);
+
+        //     // Act
+        //     await repo.DeleteUser(userId);
+
+        //     // Assert
+        //     mockDb.Verify(db => db.ExecuteAsync(
+        //         @"DELETE FROM users WHERE id = @Id",
+        //         It.Is<object>(param => ((Guid)param.GetType().GetProperty("Id")!.GetValue(param)!) == userId),
+        //         null, null, null), Times.Once);
+        // }
     }
 }

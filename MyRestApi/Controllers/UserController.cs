@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Utils;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Serilog;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MyRestApi.Controllers;
 
@@ -171,16 +172,24 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpDelete]
-    public async Task<IActionResult> DeleteUser() //TODO: ...
+    public async Task<IActionResult> DeleteUser(UserDeleteDTO dto) //TODO: ...
     {
         var userIdClaim = User.FindFirst("UserId");
-        if (userIdClaim == null)
+        var isPermissionResult = await _userService.HasSufficientPermission(Guid.Parse(userIdClaim.Value), UserRole.ADMIN);
+        if (!isPermissionResult.IsSuccess)
+            return BadRequest(new { message = "Unknow issue" });
+
+        var isPermission = isPermissionResult.Payload;
+        if (!isPermission)
             return Unauthorized(new { message = "Invalid token: no user ID." });
 
-        var userId = Guid.Parse(userIdClaim.Value);
+        // var userId = Guid.Parse(userIdClaim.Value);
+        var userId = dto.Id;
         var user = await _userService.GetUserById(userId);
         if (user == null)
             return NotFound(new { message = $"User with ID {userId} not found." });
+
+
 
         await _userService.DeleteUser(userId);
 

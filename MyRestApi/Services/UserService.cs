@@ -5,6 +5,7 @@ using MyRestApi.Services;
 using Utils;
 using Serilog;
 using MyRestApi.DTO;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 public class UserService : IUserService
 {
@@ -78,5 +79,23 @@ public class UserService : IUserService
     }
 
     public async Task DeleteUser(Guid id)
-    => await _repo.DeleteUser(id);
+        => await _repo.DeleteUser(id);
+
+    public async Task<Result<bool>> HasSufficientPermission(Guid userId, UserRole role)
+    {
+        var isUserExist = await _repo.IsUserExist(userId);
+        if (!isUserExist && role == UserRole.GUEST)
+        {
+            return Result<bool>.Success(true);
+        }
+
+        var permission = await _repo.GetUserPermission(userId);
+
+        if (permission != role)
+        {
+            return Result<bool>.Success(false);
+        }
+
+        return Result<bool>.Success(true);
+    }
 }
