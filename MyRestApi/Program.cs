@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Utils;
 using System.Reflection;
+using Confluent.Kafka;
 
 // initial logger
 Utils.Logger.Init();

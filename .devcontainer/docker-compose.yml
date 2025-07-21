@@ -17,6 +17,7 @@ services:
     network_mode: service:db
     ports:
       - "5196:5196"
+      - "5211:5211"
     
     # Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
     # user: root
@@ -39,5 +40,28 @@ services:
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:7.5.0
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   ports:
+  #     - "2181:2181"
+
+  # kafka:
+  #   image: confluentinc/cp-kafka:7.5.0
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #   volumes:
+  #     - kafka-data:/var/lib/kafka/data
+
 volumes:
   postgres-data:
+  # kafka-data:
