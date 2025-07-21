@@ -1,5 +1,3 @@
-using MyRestApi.DTO;
-using MyRestApi.Models;
 namespace MyRestApi.Repositories;
 
 public interface IUserRepository

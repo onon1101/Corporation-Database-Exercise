@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyRestApi.DTO;
+// If CreateReservationDTO is in another namespace, add the correct using here, for example:
+// using MyRestApi.DTO.Reservations;
 using MyRestApi.Models;
 using MyRestApi.Services;
 

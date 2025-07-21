@@ -1,18 +1,17 @@
 
-using MyRestApi.Repositories;
-using MyRestApi.Services;
 using System.Data;
 using Npgsql;
 using Serilog;
-using MyRestApi.Utils;
 using Microsoft.EntityFrameworkCore;
-using MyRestApi.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using MyRestApi.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using MyRestApi.Utils;
 using Utils;
 using System.Reflection;
+using Microsoft.OpenApi.Models;
+using MyRestApi.WebApi.Services;
 
 // initial logger
 Utils.Logger.Init();
@@ -25,12 +24,14 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(SwaggerGenerator.Init);
-builder.Services.AddJwtAuthentication(builder.Configuration); // jwt initialize.
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthentication();
 
 // extension from MyRestApi Module.
-builder.Services.AddAppServices(builder.Configuration);
+// builder.Services.AddAppServices(builder.Configuration);
+builder.Services.AddSingleton<KafkaProducer>();
 
-builder.ConfigureEnvironmentAndDatabase(); // if the env is test, then ...
+// builder.ConfigureEnvironmentAndDatabase(); // if the env is test, then ...
 
 var app = builder.Build();
 

@@ -195,5 +195,13 @@ public class UserController : ControllerBase
 
         return Ok(new { message = $"User with ID {userId} deleted successfully." });
     }
+
+    [HttpPost]
+    public async Task<IActionResult> SendTestMessageToKafka()
+    {
+        await _kafka.SendMovieAsync(dto);
+
+        return Ok(new { Message = "Movie task sent to Kafka" });
+    }
 }
 
