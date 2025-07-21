@@ -76,9 +76,9 @@ namespace MyRestApi.Repositories
 
             var param = new DynamicParameters();
             param.Add("Id", id, DbType.Guid);
-
-            await _db.ExecuteAsync("DELETE FROM reservation_seats WHERE reservation_id = @Id;", param, tx);
-            var rows = await _db.ExecuteAsync("DELETE FROM reservations WHERE id = @Id;", param, tx);
+            
+            await _db.ExecuteAsync("UPDATE reservation_seats SET is_deleted = TRUE WHERE reservation_id = @Id;", param, tx);
+            var rows = await _db.ExecuteAsync("UPDATE reservations SET is_deleted = TRUE WHERE id = @Id;", param, tx);
 
             tx.Commit();
             return rows > 0;

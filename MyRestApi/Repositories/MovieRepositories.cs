@@ -71,7 +71,8 @@ namespace MyRestApi.Repositories
 
         public async Task<bool> DeleteMovie(Guid id)
         {
-            const string sql = "DELETE FROM movies WHERE id = @Id;";
+            const string sql = "UPDATE movies SET is_deleted = TRUE WHERE id = @Id;";
+
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Guid);
 

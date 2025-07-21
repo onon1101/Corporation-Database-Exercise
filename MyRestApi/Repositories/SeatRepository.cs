@@ -70,7 +70,8 @@ namespace MyRestApi.Repositories
 
         public async Task<bool> DeleteSeat(Guid id)
         {
-            const string sql = "DELETE FROM seats WHERE id = @Id;";
+            const string sql = "UPDATE seats SET is_deleted = TRUE WHERE id = @Id;";
+
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Guid);
 

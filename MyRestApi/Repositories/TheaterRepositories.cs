@@ -54,7 +54,7 @@ namespace MyRestApi.Repositories
             var parameters = new DynamicParameters();
             parameters.Add("Id", id, DbType.Guid);
 
-            const string sql = "DELETE FROM theaters WHERE id = @Id";
+            const string sql = "UPDATE theaters SET is_deleted = TRUE WHERE id = @Id";
             return await _db.ExecuteAsync(sql, parameters) > 0;
         }
 
