@@ -45,7 +45,7 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     networks:
       - my_bridge_network
-      
+
   zookeeper:
     image: bitnami/zookeeper:latest
     container_name: zookeeper
@@ -66,9 +66,26 @@ services:
     networks:
       - my_bridge_network
 
+  mongo-express:  # ✅ 新增的 Web UI
+    image: mongo-express
+    container_name: mongo_express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: admin      # ✅ 新增這兩行
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123   # ✅ 新增這兩行
+    depends_on:
+      - mongo
+    networks:
+      - my_bridge_network
+
 volumes:
-  pgdata:  
+  pgdata:
   mongodata:
 
 networks:
-  my_bridge_network: 
+  my_bridge_network:

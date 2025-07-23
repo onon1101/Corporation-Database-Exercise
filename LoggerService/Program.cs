@@ -1,18 +1,13 @@
-// var builder = WebApplication.CreateBuilder(args);
-// var app = builder.Build();
-//
-// app.MapGet("/", () => "Hello World!");
-//
-// app.Run();
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
+using Microsoft.Extensions.Hosting;
+using LoggerService;
 
 Host.CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration((context, config) =>
-    {
-        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-    })
-    .ConfigureServices((context, services) =>
-    {
-        services = LoggerService.ServiceCollectionExtensions.AddAppService(services);
-    })
+    .ConfigureAppConfigurationFromJson()
+    .ConfigureServicesFromContext()
     .Build()
     .Run();
+

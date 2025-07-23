@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "UserService\UserService.csproj", "{11DB3BDA-FD22-44DD-960F-91C8ACE36B40}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionItems", "solutionItems", "{C0795EA5-23B5-45C0-993C-289F7D00AB8F}"
@@ -9,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionItems", "solutionIt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Worker", "UserService.Worker\UserService.Worker.csproj", "{64B0865A-F123-41CD-91DF-54293CA95DAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerService", "LoggerService\LoggerService.csproj", "{4811E55A-6DCA-431B-9661-B697467C90BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerService.Worker", "LoggerService\LoggerService.Worker.csproj", "{4811E55A-6DCA-431B-9661-B697467C90BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,5 +32,11 @@ Global
 		{4811E55A-6DCA-431B-9661-B697467C90BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4811E55A-6DCA-431B-9661-B697467C90BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4811E55A-6DCA-431B-9661-B697467C90BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {441B0FBA-4345-45A0-9F34-D44C9EE1D837}
 	EndGlobalSection
 EndGlobal
