@@ -19,4 +19,11 @@ public class UserController(IUserService userService, IConfiguration configurati
         var registerUser = await _service.RegisterUser(dto);
         return Ok(registerUser.Payload!);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete([FromBody] UserDeleteRequestDTO dto)
+    {
+        var deleteUser = await _service.DeleteUser(dto);
+        return Ok(deleteUser.Payload!);
+    }
 }

@@ -13,7 +13,7 @@ public class UserRepository(IDbConnection db)
         const string sql = @"INSERT INTO users (id, username, registered_at)
                             VALUES (@UserId, @Username, @RegisteredAt);";
         var parameters = new DynamicParameters();
-        parameters.Add("UserId", user.UserId, DbType.Guid);
+        // parameters.Add("UserId", user.UserId, DbType.Guid);
         parameters.Add("Username", user.Username, DbType.String);
         parameters.Add("RegisteredAt", user.RegisteredAt, DbType.DateTime);
 
