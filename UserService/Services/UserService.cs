@@ -2,16 +2,19 @@ using Api.DTO;
 using Api.Services.Interface;
 using Api.Utils;
 using UserService.Eventing;
+using UserService.Repositories;
 
 namespace UserService.Services;
 
 public class UserService : IUserService
 {
     private readonly KafkaProducer _kafka;
+    private readonly UserRepository _userRepository;
 
-    public UserService(KafkaProducer kafka)
+    public UserService(KafkaProducer kafka, UserRepository repository)
     {
         _kafka = kafka;
+        _userRepository = repository;
     }
 
     public async Task<Result<UserRegisterResponseDTO>> RegisterUser(UserRegisterRequestDTO dto)
@@ -67,7 +70,13 @@ public class UserService : IUserService
         
         return Result<UserDeleteResponseDTO>.Success(new UserDeleteResponseDTO
         {
-        Message = "user delete request is processing."
+            Message = "user delete request is processing."
         });
+    }
+
+    public async Task<Result<UserGetByPhoneNumberResponseDTO>> GetByIdUser(UserGetByPhoneNumberRequestDTO dto)
+    {
+        return Result<UserGetByPhoneNumberResponseDTO>.Success(
+            await _userRepository.GetByPhoneNumber(dto));
     }
 }

@@ -7,4 +7,5 @@ public interface IUserService
 {
     public Task<Result<UserRegisterResponseDTO>> RegisterUser(UserRegisterRequestDTO dto);
     public Task<Result<UserDeleteResponseDTO>> DeleteUser(UserDeleteRequestDTO dto);
+    public Task<Result<UserGetByPhoneNumberResponseDTO>> GetByIdUser(UserGetByPhoneNumberRequestDTO dto);
 }

@@ -26,4 +26,11 @@ public class UserController(IUserService userService, IConfiguration configurati
         var deleteUser = await _service.DeleteUser(dto);
         return Ok(deleteUser.Payload!);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> GetById([FromBody] UserGetByPhoneNumberRequestDTO dto)
+    {
+        var getUser = await _service.GetByIdUser(dto);
+        return Ok(getUser.Payload!);
+    }
 }
