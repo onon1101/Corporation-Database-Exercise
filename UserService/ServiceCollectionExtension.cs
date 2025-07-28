@@ -16,7 +16,8 @@ public static class ServiceCollectionExtension
         services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(configuration.GetConnectionString("DefaultConnection")));
         
         services.AddScoped<IUserService, Services.UserService>();
-        services.AddSingleton<KafkaProducer>();
+        services.AddScoped<IKafkaTopicResolver, KafkaTopicResolver>();
+        services.AddScoped<KafkaProducer>();
         return services;
     }
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services,

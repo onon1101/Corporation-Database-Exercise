@@ -25,17 +25,23 @@ public class UserService : IUserService
             PhoneNumber = dto.PhoneNumber,
             RegisteredAt = DateTime.UtcNow
         };
-
-        await _kafka.SendUserRegisteredAsync(registerEvent);
+        // await _kafka.SendUserRegisteredAsync(registerEvent);
+        // await _kafka.SendAsync(KafkaTopicType.UserRegistered, registerEvent);
 
         var logEvent = new LogDTO
         {
-            Timestamp = new DateTime(),
+            Timestamp = DateTime.UtcNow,
             Level = "INFO",
             Message = "user registered",
             Source = "user service",
         };
-        await _kafka.SendLogAsync(logEvent);
+        // await _kafka.SendAsync(KafkaTopicType.Log, logEvent);
+        // await _kafka.SendLogAsync(logEvent);
+
+        await Task.WhenAll(
+            _kafka.SendAsync(KafkaTopicType.UserRegistered, registerEvent),
+            _kafka.SendAsync(KafkaTopicType.UserRegistered, logEvent)
+        );
 
         return Result<UserRegisterResponseDTO>.Success(new UserRegisterResponseDTO
         {
@@ -45,18 +51,20 @@ public class UserService : IUserService
 
     public async Task<Result<UserDeleteResponseDTO>> DeleteUser(UserDeleteRequestDTO dto)
     {
-        var deleteEvent = new UserDeleteEventDTO
-        {
-            Username = dto.Username,
-            Password = dto.Password,
-            DeletedOn = DateTime.UtcNow
-        };
+        // var deleteEvent = new UserDeleteEventDTO
+        // {
+        //     Username = dto.Username,
+        //     Password = dto.Password,
+        //     DeletedOn = DateTime.UtcNow
+        // };
+        //
+        // await _kafka.SendUserDeletedAsync(deleteEvent);
+        //
+        // return Result<UserDeleteResponseDTO>.Success(new UserDeleteResponseDTO
+        // {
+        //     Message = "user delete request is processing."
+        // });
         
-        await _kafka.SendUserDeletedAsync(deleteEvent);
-
-        return Result<UserDeleteResponseDTO>.Success(new UserDeleteResponseDTO
-        {
-            Message = "user delete request is processing."
-        });
+        throw new NotImplementedException();
     }
 }
