@@ -28,6 +28,15 @@ public class UserService : IUserService
 
         await _kafka.SendUserRegisteredAsync(registerEvent);
 
+        var logEvent = new LogDTO
+        {
+            Timestamp = new DateTime(),
+            Level = "INFO",
+            Message = "user registered",
+            Source = "user service",
+        };
+        await _kafka.SendLogAsync(logEvent);
+
         return Result<UserRegisterResponseDTO>.Success(new UserRegisterResponseDTO
         {
             Message = "user register request is processing."
@@ -49,6 +58,5 @@ public class UserService : IUserService
         {
             Message = "user delete request is processing."
         });
-        throw new NotImplementedException();
     }
 }
