@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using LoggerService.Repositories;
+using LoggerService.Services;
+using Serilog;
 using Serilog.AspNetCore;
 using MongoDB.Driver;
 
@@ -44,7 +46,9 @@ public static class ServiceCollectionExtensions
             });
 
             // 加入背景服務
-            services.AddHostedService<MongoSampleService>();
+            // services.AddHostedService<MongoSampleService>();
+            services.AddScoped<MongoBusRepository>();
+            services.AddHostedService<KafkaConsumerService>();
         });
     }
 }
