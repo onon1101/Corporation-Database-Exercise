@@ -18,7 +18,7 @@ public static class ServiceCollectionExtension
     {
         services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("redis:6379"));
+        services.AddScoped<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("localhost:6379"));
         services.AddScoped<IDatabase>(sp => sp.GetRequiredService<IConnectionMultiplexer>().GetDatabase());
         
         services.AddScoped<IUserService, Services.UserService>();
