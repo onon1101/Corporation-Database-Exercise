@@ -11,12 +11,14 @@ public class KafkaProducer: IKafkaProducer
     private readonly string _bootstrapServers;
     private readonly string _userRegisterTopic;
     private readonly string _userDeleteTopic;
+    private readonly string _logTopic;
 
     public KafkaProducer(IConfiguration configuration)
     {
         _bootstrapServers = configuration["Kafka:BootstrapServers"];
         _userRegisterTopic = configuration["Kafka:UserRegisterTopic"];
         _userDeleteTopic = configuration["Kafka:UserDeleteTopic"];
+        _logTopic = configuration["Kafka:LogTopic"];
     }
 
     public async Task SendUserRegisteredAsync(UserRegisterEventDTO registerEvent)
@@ -46,5 +48,20 @@ public class KafkaProducer: IKafkaProducer
         
         var message = new Message<Null, string> { Value = JsonSerializer.Serialize(deleteEvent) };
         await producer.ProduceAsync(_userDeleteTopic, message);
+    }
+
+    public async Task SendLogAsync(LogDTO logEvent)
+    {
+        var config = new ProducerConfig
+        {
+            BootstrapServers = "localhost:9092",
+            BrokerAddressFamily = BrokerAddressFamily.V4,
+            ClientDnsLookup = ClientDnsLookup.UseAllDnsIps
+        };
+        
+        using var producer = new ProducerBuilder<Null, string>(config).Build();
+
+        var message = new Message<Null, string> { Value = JsonSerializer.Serialize(logEvent) };
+        await producer.ProduceAsync(_logTopic, message);
     }
 }
